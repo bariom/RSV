@@ -200,7 +200,7 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
 
         sources = connection.execute(
             """
-            SELECT s.title
+            SELECT s.title, s.url
             FROM entity_sources es
             JOIN sources s ON s.id = es.source_id
             JOIN entities e ON e.id = es.entity_id
@@ -210,9 +210,43 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
             (slug,),
         ).fetchall()
 
+        events = connection.execute(
+            """
+            SELECT
+                event_entity.title,
+                ev.date_label,
+                event_entity.summary
+            FROM event_places ep
+            JOIN entities place_entity ON place_entity.id = ep.place_entity_id
+            JOIN entities event_entity ON event_entity.id = ep.event_entity_id
+            JOIN events ev ON ev.entity_id = ep.event_entity_id
+            WHERE place_entity.slug = %s
+            ORDER BY ev.start_date NULLS LAST, event_entity.sort_order, event_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        media = connection.execute(
+            """
+            SELECT
+                media_entity.title,
+                COALESCE(em.caption_override, mi.caption, media_entity.summary) AS caption,
+                COALESCE(mi.source_url, '') AS url
+            FROM entity_media em
+            JOIN entities entity ON entity.id = em.entity_id
+            JOIN entities media_entity ON media_entity.id = em.media_entity_id
+            JOIN media_items mi ON mi.entity_id = em.media_entity_id
+            WHERE entity.slug = %s
+            ORDER BY em.sort_order, media_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
     result = dict(place)
     result["themes"] = [row["title"] for row in themes]
-    result["sources"] = [row["title"] for row in sources]
+    result["sources"] = [dict(row) for row in sources]
+    result["events"] = [dict(row) for row in events]
+    result["media"] = [dict(row) for row in media]
     return result
 
 
@@ -238,5 +272,55 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
             """,
             (slug,),
         ).fetchone()
+        if not person:
+            return None
 
-    return dict(person) if person else None
+        events = connection.execute(
+            """
+            SELECT
+                event_entity.title,
+                ev.date_label,
+                event_entity.summary
+            FROM event_participants ep
+            JOIN entities person_entity ON person_entity.id = ep.participant_entity_id
+            JOIN entities event_entity ON event_entity.id = ep.event_entity_id
+            JOIN events ev ON ev.entity_id = ep.event_entity_id
+            WHERE person_entity.slug = %s
+            ORDER BY ev.start_date NULLS LAST, event_entity.sort_order, event_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        media = connection.execute(
+            """
+            SELECT
+                media_entity.title,
+                COALESCE(em.caption_override, mi.caption, media_entity.summary) AS caption,
+                COALESCE(mi.source_url, '') AS url
+            FROM entity_media em
+            JOIN entities entity ON entity.id = em.entity_id
+            JOIN entities media_entity ON media_entity.id = em.media_entity_id
+            JOIN media_items mi ON mi.entity_id = em.media_entity_id
+            WHERE entity.slug = %s
+            ORDER BY em.sort_order, media_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        sources = connection.execute(
+            """
+            SELECT s.title, s.url
+            FROM entity_sources es
+            JOIN sources s ON s.id = es.source_id
+            JOIN entities e ON e.id = es.entity_id
+            WHERE e.slug = %s
+            ORDER BY s.title
+            """,
+            (slug,),
+        ).fetchall()
+
+    result = dict(person)
+    result["events"] = [dict(row) for row in events]
+    result["media"] = [dict(row) for row in media]
+    result["sources"] = [dict(row) for row in sources]
+    return result

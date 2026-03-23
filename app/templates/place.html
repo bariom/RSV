@@ -24,15 +24,60 @@
 
 <section class="section">
   <div class="section-heading">
-    <p class="eyebrow">Fonti</p>
-    <h2>Riferimenti per questa scheda</h2>
+    <p class="eyebrow">Eventi collegati</p>
+    <h2>Cronologia del luogo</h2>
   </div>
   <div class="stack-list">
-    {% for source in place.sources %}
+    {% for event in place.events %}
       <div class="stack-item">
-        <p>{{ source }}</p>
+        <h3>{{ event.title }}</h3>
+        <p><strong>{{ event.date_label }}</strong></p>
+        <p>{{ event.summary }}</p>
+      </div>
+    {% else %}
+      <div class="stack-item">
+        <p>Nessun evento collegato disponibile.</p>
       </div>
     {% endfor %}
   </div>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Media</p>
+    <div class="stack-list">
+      {% for media in place.media %}
+        <div class="stack-item">
+          <h3>{{ media.title }}</h3>
+          <p>{{ media.caption }}</p>
+          {% if media.url %}
+            <p><a href="{{ media.url }}" target="_blank" rel="noreferrer">Apri il media</a></p>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessun media collegato disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Fonti</p>
+    <div class="stack-list">
+      {% for source in place.sources %}
+        <div class="stack-item">
+          {% if source.url %}
+            <h3><a href="{{ source.url }}" target="_blank" rel="noreferrer">{{ source.title }}</a></h3>
+          {% else %}
+            <h3>{{ source.title if source.title else source }}</h3>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessuna fonte collegata disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
 </section>
 {% endblock %}

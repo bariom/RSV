@@ -15,6 +15,25 @@
       "description": "Il Battistero di San Giovanni, probabilmente del V secolo e sorto su fondazioni romane, e uno dei simboli monumentali piu forti di Riva San Vitale.",
       "period": "V secolo",
       "themes": ["Archeologia", "Cristianesimo"],
+      "events": [
+        {
+          "title": "Costruzione del Battistero di San Giovanni",
+          "date_label": "circa 500",
+          "summary": "Il Battistero testimonia la fase paleocristiana del borgo."
+        },
+        {
+          "title": "Restauro del Battistero di San Giovanni",
+          "date_label": "1953-1955",
+          "summary": "Intervento novecentesco fondamentale per la conservazione del monumento."
+        }
+      ],
+      "media": [
+        {
+          "title": "Foto del Battistero di San Giovanni",
+          "caption": "Fotografia del Battistero di San Giovanni.",
+          "url": "https://commons.wikimedia.org/wiki/File:Riva_San_Vitale_Battistero.JPG"
+        }
+      ],
       "sources": [
         "Comune di Riva San Vitale, Battistero paleocristiano",
         "Dizionario storico della Svizzera",
@@ -29,6 +48,25 @@
       "description": "La chiesa di San Vitale e uno dei cardini della storia religiosa del borgo, con cantieri che vanno dal campanile del 1754 al restauro del 1992.",
       "period": "1756-1759",
       "themes": ["Cristianesimo"],
+      "events": [
+        {
+          "title": "Costruzione della chiesa parrocchiale di San Vitale",
+          "date_label": "1756-1759",
+          "summary": "La costruzione tardobarocca sostituisce la precedente basilica altomedievale."
+        },
+        {
+          "title": "Restauro integrale della chiesa di San Vitale",
+          "date_label": "1992",
+          "summary": "Intervento di restauro curato dagli architetti Giancarlo e Pia Durisch."
+        }
+      ],
+      "media": [
+        {
+          "title": "Interno della chiesa di San Vitale",
+          "caption": "Fotografia storica dell interno della chiesa di San Vitale.",
+          "url": "https://patrimonio.luganocultura.ch/oggetti/35688-interno-della-chiesa-di-s-vitale-a-riva-san-vitale"
+        }
+      ],
       "sources": [
         "Comune di Riva San Vitale, Chiesa parrocchiale di San Vitale",
         "Dizionario storico della Svizzera"
@@ -42,6 +80,20 @@
       "description": "Il tempio di Santa Croce domina il borgo e rappresenta una delle architetture religiose piu notevoli del tardo Rinascimento in Svizzera.",
       "period": "1582-1599",
       "themes": ["Cristianesimo"],
+      "events": [
+        {
+          "title": "Costruzione del tempio di Santa Croce",
+          "date_label": "1582-1599",
+          "summary": "Cantiere tardorinascimentale promosso da Giovan Andrea Della Croce."
+        }
+      ],
+      "media": [
+        {
+          "title": "Foto del tempio di Santa Croce",
+          "caption": "Fotografia del tempio di Santa Croce.",
+          "url": "https://commons.wikimedia.org/wiki/File:Santa_Croce_Riva.jpg"
+        }
+      ],
       "sources": [
         "Comune di Riva San Vitale, Tempio di Santa Croce",
         "Ticino Turismo"
@@ -55,7 +107,18 @@
       "subtitle": "Eremita venerato sul Monte San Giorgio",
       "summary": "Figura devozionale legata al Monte San Giorgio e alla memoria religiosa di Riva San Vitale.",
       "description": "Secondo la tradizione visse da eremita sul Monte San Giorgio e la sua memoria resta viva a Riva San Vitale.",
-      "dates": "m. 27 gennaio 1217"
+      "dates": "m. 27 gennaio 1217",
+      "events": [
+        {
+          "title": "Morte del Beato Manfredo Settala e inizio del culto locale",
+          "date_label": "27 gennaio 1217",
+          "summary": "Evento devozionale legato al Monte San Giorgio e alla chiesa di Riva."
+        }
+      ],
+      "media": [],
+      "sources": [
+        "Ticino Turismo, Festa del Beato Manfredo Settala"
+      ]
     },
     {
       "slug": "giovan-andrea-della-croce",
@@ -63,7 +126,18 @@
       "subtitle": "Canonico e committente",
       "summary": "Promotore del tempio di Santa Croce alla fine del XVI secolo.",
       "description": "E ricordato come il committente del tempio di Santa Croce, costruito presso la dimora di famiglia.",
-      "dates": "fine XVI secolo"
+      "dates": "fine XVI secolo",
+      "events": [
+        {
+          "title": "Costruzione del tempio di Santa Croce",
+          "date_label": "1582-1599",
+          "summary": "Cantiere tardorinascimentale promosso da Giovan Andrea Della Croce."
+        }
+      ],
+      "media": [],
+      "sources": [
+        "Comune di Riva San Vitale, Tempio di Santa Croce"
+      ]
     },
     {
       "slug": "don-gottardo-zurini",
@@ -71,7 +145,25 @@
       "subtitle": "Arciprete di Riva San Vitale",
       "summary": "Primo presidente del Gran Consiglio del Canton Ticino secondo la memoria civica locale.",
       "description": "Nato il 5 aprile 1746 e morto a Riva San Vitale il 6 marzo 1815, fu arciprete di Riva e figura pubblica di primo piano.",
-      "dates": "1746-1815"
+      "dates": "1746-1815",
+      "events": [
+        {
+          "title": "Fondazione del Canton Ticino",
+          "date_label": "1803",
+          "summary": "Riva San Vitale entra nel nuovo quadro cantonale."
+        }
+      ],
+      "media": [
+        {
+          "title": "Gottardo Zurini (1746-1815)",
+          "caption": "Stampa commemorativa dedicata a Gottardo Zurini.",
+          "url": "https://patrimonio.luganocultura.ch/oggetti/4207-gottardo-zurini-1746-1815"
+        }
+      ],
+      "sources": [
+        "Comune di Riva San Vitale, Cenni storici",
+        "Lugano Storia, Gottardo Zurini (1746-1815)"
+      ]
     }
   ],
   "events": [
