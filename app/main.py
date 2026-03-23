@@ -152,8 +152,8 @@ def _admin_form_data(form_data: dict[str, str]) -> dict[str, object]:
     }
 
 
-@app.get("/admin/login", response_class=HTMLResponse)
-def admin_login_page(request: Request) -> HTMLResponse:
+@app.get("/admin/login", response_class=HTMLResponse, response_model=None)
+def admin_login_page(request: Request) -> HTMLResponse | RedirectResponse:
     if request.session.get("admin_authenticated"):
         return RedirectResponse("/admin", status_code=303)
     return templates.TemplateResponse(
@@ -162,7 +162,7 @@ def admin_login_page(request: Request) -> HTMLResponse:
     )
 
 
-@app.post("/admin/login", response_class=HTMLResponse)
+@app.post("/admin/login", response_class=HTMLResponse, response_model=None)
 async def admin_login(request: Request, password: str = Form(...)) -> HTMLResponse | RedirectResponse:
     if not has_admin_password():
         return templates.TemplateResponse(
@@ -186,7 +186,7 @@ def admin_logout(request: Request) -> RedirectResponse:
     return RedirectResponse("/admin/login", status_code=303)
 
 
-@app.get("/admin", response_class=HTMLResponse)
+@app.get("/admin", response_class=HTMLResponse, response_model=None)
 def admin_dashboard(request: Request) -> HTMLResponse | RedirectResponse:
     redirect = _require_admin(request)
     if redirect:
@@ -197,7 +197,7 @@ def admin_dashboard(request: Request) -> HTMLResponse | RedirectResponse:
     )
 
 
-@app.get("/admin/entities/new", response_class=HTMLResponse)
+@app.get("/admin/entities/new", response_class=HTMLResponse, response_model=None)
 def admin_new_entity_page(request: Request) -> HTMLResponse | RedirectResponse:
     redirect = _require_admin(request)
     if redirect:
@@ -215,7 +215,7 @@ def admin_new_entity_page(request: Request) -> HTMLResponse | RedirectResponse:
     )
 
 
-@app.post("/admin/entities/new", response_class=HTMLResponse)
+@app.post("/admin/entities/new", response_class=HTMLResponse, response_model=None)
 async def admin_create_entity(request: Request) -> HTMLResponse | RedirectResponse:
     redirect = _require_admin(request)
     if redirect:
@@ -243,7 +243,7 @@ async def admin_create_entity(request: Request) -> HTMLResponse | RedirectRespon
     return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
 
 
-@app.get("/admin/entities/{entity_id}", response_class=HTMLResponse)
+@app.get("/admin/entities/{entity_id}", response_class=HTMLResponse, response_model=None)
 def admin_entity_page(request: Request, entity_id: str) -> HTMLResponse | RedirectResponse:
     redirect = _require_admin(request)
     if redirect:
@@ -264,7 +264,7 @@ def admin_entity_page(request: Request, entity_id: str) -> HTMLResponse | Redire
     )
 
 
-@app.post("/admin/entities/{entity_id}", response_class=HTMLResponse)
+@app.post("/admin/entities/{entity_id}", response_class=HTMLResponse, response_model=None)
 async def admin_update_entity(request: Request, entity_id: str) -> HTMLResponse | RedirectResponse:
     redirect = _require_admin(request)
     if redirect:
