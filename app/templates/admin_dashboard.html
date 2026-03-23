@@ -1,0 +1,31 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Admin</p>
+  <h1>Contenuti del database</h1>
+  <p class="hero-lead">Area protetta per creare, modificare e collegare entita del sito.</p>
+</section>
+
+<section class="section">
+  <div class="admin-actions">
+    <a class="button button-primary" href="/admin/entities/new">Nuova entita</a>
+  </div>
+  <div class="stack-list">
+    {% for entity in entities %}
+      <article class="stack-item admin-list-item">
+        <div>
+          <span class="tag">{{ entity.entity_type }}</span>
+          <h3><a href="/admin/entities/{{ entity.id }}">{{ entity.title }}</a></h3>
+          <p><code>{{ entity.slug }}</code> / {{ entity.status }}</p>
+        </div>
+        <a class="button button-secondary" href="/admin/entities/{{ entity.id }}">Modifica</a>
+      </article>
+    {% else %}
+      <article class="stack-item">
+        <p>Nessuna entita disponibile oppure connessione al database non configurata.</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -14,6 +14,8 @@
       "summary": "Il piu antico edificio cristiano interamente conservato in Svizzera.",
       "description": "Il Battistero di San Giovanni, probabilmente del V secolo e sorto su fondazioni romane, e uno dei simboli monumentali piu forti di Riva San Vitale.",
       "period": "V secolo",
+      "category": "religious site",
+      "historical_name": "",
       "themes": ["Archeologia", "Cristianesimo"],
       "events": [
         {
@@ -47,6 +49,8 @@
       "summary": "Edificio tardobarocco sorto su una precedente basilica altomedievale.",
       "description": "La chiesa di San Vitale e uno dei cardini della storia religiosa del borgo, con cantieri che vanno dal campanile del 1754 al restauro del 1992.",
       "period": "1756-1759",
+      "category": "religious site",
+      "historical_name": "",
       "themes": ["Cristianesimo"],
       "events": [
         {
@@ -79,6 +83,8 @@
       "summary": "Monumento costruito tra gli anni 1580 e il 1599 per volere di Giovan Andrea Della Croce.",
       "description": "Il tempio di Santa Croce domina il borgo e rappresenta una delle architetture religiose piu notevoli del tardo Rinascimento in Svizzera.",
       "period": "1582-1599",
+      "category": "religious site",
+      "historical_name": "",
       "themes": ["Cristianesimo"],
       "events": [
         {

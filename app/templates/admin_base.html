@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site_title if site_title else "Admin RSV" }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+</head>
+<body>
+  <div class="app-shell admin-shell">
+    <header class="site-header">
+      <a class="site-brand" href="/admin">RSV</a>
+      <nav class="site-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/entities/new">Nuova entita</a>
+        <a href="/">Sito pubblico</a>
+        <a href="/admin/logout">Logout</a>
+      </nav>
+    </header>
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

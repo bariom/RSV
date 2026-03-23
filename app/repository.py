@@ -6,8 +6,15 @@ from pathlib import Path
 from typing import Any
 
 from app.db import get_connection, has_database_config
+from app.storage import build_upload_url
 
 DATA_PATH = Path(__file__).parent / "data" / "site.json"
+
+
+def _resolve_media_url(row: dict[str, Any]) -> dict[str, Any]:
+    source_url = row.get("source_url") or ""
+    row["url"] = source_url or build_upload_url(row.get("file_path"))
+    return row
 
 
 @lru_cache(maxsize=1)
@@ -51,7 +58,8 @@ def get_places() -> list[dict[str, Any]]:
                     e.subtitle,
                     e.summary,
                     e.description_md AS description,
-                    COALESCE(p.geo_notes, p.address_text, '') AS period
+                    REPLACE(CAST(p.place_type AS text), '_', ' ') AS category,
+                    COALESCE(p.historical_name, '') AS historical_name
                 FROM entities e
                 JOIN places p ON p.entity_id = e.id
                 WHERE e.status = 'published'
@@ -225,7 +233,8 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
                 e.subtitle,
                 e.summary,
                 e.description_md AS description,
-                COALESCE(p.geo_notes, p.address_text, '') AS period
+                REPLACE(CAST(p.place_type AS text), '_', ' ') AS category,
+                COALESCE(p.historical_name, '') AS historical_name
             FROM entities e
             JOIN places p ON p.entity_id = e.id
             WHERE e.slug = %s
@@ -280,7 +289,8 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
             SELECT
                 media_entity.title,
                 COALESCE(em.caption_override, mi.caption, media_entity.summary) AS caption,
-                COALESCE(mi.source_url, '') AS url
+                mi.file_path,
+                mi.source_url
             FROM entity_media em
             JOIN entities entity ON entity.id = em.entity_id
             JOIN entities media_entity ON media_entity.id = em.media_entity_id
@@ -295,7 +305,7 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
     result["themes"] = [row["title"] for row in themes]
     result["sources"] = [dict(row) for row in sources]
     result["events"] = [dict(row) for row in events]
-    result["media"] = [dict(row) for row in media]
+    result["media"] = [_resolve_media_url(dict(row)) for row in media]
     return result
 
 
@@ -345,7 +355,8 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
             SELECT
                 media_entity.title,
                 COALESCE(em.caption_override, mi.caption, media_entity.summary) AS caption,
-                COALESCE(mi.source_url, '') AS url
+                mi.file_path,
+                mi.source_url
             FROM entity_media em
             JOIN entities entity ON entity.id = em.entity_id
             JOIN entities media_entity ON media_entity.id = em.media_entity_id
@@ -370,6 +381,6 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
 
     result = dict(person)
     result["events"] = [dict(row) for row in events]
-    result["media"] = [dict(row) for row in media]
+    result["media"] = [_resolve_media_url(dict(row)) for row in media]
     result["sources"] = [dict(row) for row in sources]
     return result

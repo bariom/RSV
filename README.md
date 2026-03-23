@@ -70,6 +70,30 @@ Con `DATABASE_URL` presente:
 
 - l app prova a leggere homepage, timeline, luoghi e persone dal database remoto
 
+## Area admin
+
+L app include una prima area amministrativa protetta da password:
+
+- `/admin/login`
+- `/admin`
+
+Configura nel file `.env`:
+
+```env
+ADMIN_PASSWORD=una-password-lunga
+APP_SECRET_KEY=una-chiave-segreta-per-le-sessioni
+UPLOAD_DIR=uploads
+```
+
+Funzioni attuali:
+
+- login protetto da password;
+- elenco entita presenti nel DB;
+- creazione e modifica di entita principali;
+- gestione dettagli base per `place`, `person`, `event`, `document`, `media`, `narrative`, `organization`, `theme`;
+- collegamento manuale di media a una scheda tramite slug;
+- upload immagini su filesystem con path salvato nel DB.
+
 ## Passo successivo
 
 Il passo successivo naturale e ampliare le query del repository per includere anche eventi collegati, fonti e media reali nelle singole pagine.

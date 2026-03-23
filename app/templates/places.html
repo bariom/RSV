@@ -11,7 +11,7 @@
   <div class="card-grid">
     {% for place in places %}
       <article class="card">
-        <span class="tag">{{ place.period }}</span>
+        <span class="tag">{{ place.category if place.category else place.subtitle }}</span>
         <h3><a href="/luoghi/{{ place.slug }}">{{ place.title }}</a></h3>
         <p>{{ place.subtitle }}</p>
         <p>{{ place.summary }}</p>

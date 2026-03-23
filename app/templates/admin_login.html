@@ -1,0 +1,24 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Admin</p>
+  <h1>Accesso riservato</h1>
+  <p class="hero-lead">Inserisci la password configurata sul server per gestire i contenuti.</p>
+</section>
+
+<section class="section">
+  <article class="panel admin-form-wrap">
+    {% if error %}
+      <p class="admin-error">{{ error }}</p>
+    {% endif %}
+    <form method="post" class="admin-form">
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" required>
+      </label>
+      <button class="button button-primary" type="submit">Entra</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

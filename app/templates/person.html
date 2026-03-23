@@ -48,6 +48,11 @@
       {% for media in person.media %}
         <div class="stack-item">
           <h3>{{ media.title }}</h3>
+          {% if media.file_path %}
+            <div class="media-preview">
+              <img src="{{ media.url }}" alt="{{ media.caption or media.title }}">
+            </div>
+          {% endif %}
           <p>{{ media.caption }}</p>
           {% if media.url %}
             <p><a href="{{ media.url }}" target="_blank" rel="noreferrer">Apri il media</a></p>

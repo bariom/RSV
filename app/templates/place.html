@@ -16,7 +16,10 @@
   <article class="panel">
     <p class="eyebrow">Metadati</p>
     <ul class="meta-list">
-      <li><strong>Periodo:</strong> {{ place.period }}</li>
+      <li><strong>Tipo:</strong> {{ place.category if place.category else "luogo" }}</li>
+      {% if place.historical_name %}
+        <li><strong>Nome storico:</strong> {{ place.historical_name }}</li>
+      {% endif %}
       <li><strong>Temi:</strong> {{ place.themes | join(", ") }}</li>
     </ul>
   </article>
@@ -49,6 +52,11 @@
       {% for media in place.media %}
         <div class="stack-item">
           <h3>{{ media.title }}</h3>
+          {% if media.file_path %}
+            <div class="media-preview">
+              <img src="{{ media.url }}" alt="{{ media.caption or media.title }}">
+            </div>
+          {% endif %}
           <p>{{ media.caption }}</p>
           {% if media.url %}
             <p><a href="{{ media.url }}" target="_blank" rel="noreferrer">Apri il media</a></p>

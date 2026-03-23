@@ -1,0 +1,188 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Admin</p>
+  <h1>{{ "Nuova entita" if is_new else "Modifica entita" }}</h1>
+  <p class="hero-lead">Gestione manuale dei contenuti editoriali e dei dettagli specifici per tipo.</p>
+</section>
+
+<section class="section">
+  {% if error %}
+    <p class="admin-error">{{ error }}</p>
+  {% endif %}
+  <article class="panel admin-form-wrap">
+    <form method="post" class="admin-form">
+      <div class="admin-grid">
+        <label>
+          <span>Tipo</span>
+          <select name="entity_type" {% if not is_new %}disabled{% endif %}>
+            {% for option in choices.entity_types %}
+              <option value="{{ option }}" {% if entity.entity_type == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+          {% if not is_new %}
+            <input type="hidden" name="entity_type" value="{{ entity.entity_type }}">
+          {% endif %}
+        </label>
+        <label><span>Slug</span><input type="text" name="slug" value="{{ entity.slug }}" required></label>
+        <label><span>Titolo</span><input type="text" name="title" value="{{ entity.title }}" required></label>
+        <label><span>Sottotitolo</span><input type="text" name="subtitle" value="{{ entity.subtitle }}"></label>
+        <label><span>Lingua</span><input type="text" name="language_code" value="{{ entity.language_code }}"></label>
+        <label>
+          <span>Status</span>
+          <select name="status">
+            {% for option in choices.publication_statuses %}
+              <option value="{{ option }}" {% if entity.status == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label><span>Sort order</span><input type="number" name="sort_order" value="{{ entity.sort_order }}"></label>
+        <label class="admin-checkbox"><input type="checkbox" name="is_featured" value="1" {% if entity.is_featured %}checked{% endif %}><span>In evidenza</span></label>
+      </div>
+      <label><span>Summary</span><textarea name="summary" rows="3">{{ entity.summary }}</textarea></label>
+      <label><span>Description markdown</span><textarea name="description_md" rows="6">{{ entity.description_md }}</textarea></label>
+      <label><span>Metadata JSON</span><textarea name="metadata" rows="4">{{ entity.metadata }}</textarea></label>
+      {% set d = entity.details %}
+      {% if entity.entity_type == "place" %}
+        <div class="admin-subsection">
+          <h2>Dettagli luogo</h2>
+          <div class="admin-grid">
+            <label><span>Place type</span><select name="place_type">{% for option in choices.place_types %}<option value="{{ option }}" {% if d.place_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>Current name</span><input type="text" name="current_name" value="{{ d.current_name or '' }}"></label>
+            <label><span>Historical name</span><input type="text" name="historical_name" value="{{ d.historical_name or '' }}"></label>
+            <label><span>Address</span><input type="text" name="address_text" value="{{ d.address_text or '' }}"></label>
+          </div>
+          <label><span>Geo notes</span><textarea name="geo_notes" rows="3">{{ d.geo_notes or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "person" %}
+        <div class="admin-subsection">
+          <h2>Dettagli persona</h2>
+          <div class="admin-grid">
+            <label><span>Given name</span><input type="text" name="given_name" value="{{ d.given_name or '' }}"></label>
+            <label><span>Family name</span><input type="text" name="family_name" value="{{ d.family_name or '' }}"></label>
+            <label><span>Display name</span><input type="text" name="display_name" value="{{ d.display_name or '' }}"></label>
+            <label><span>Birth label</span><input type="text" name="birth_date_label" value="{{ d.birth_date_label or '' }}"></label>
+            <label><span>Death label</span><input type="text" name="death_date_label" value="{{ d.death_date_label or '' }}"></label>
+            <label><span>Occupations</span><input type="text" name="occupations" value="{{ d.occupations or '' }}"></label>
+          </div>
+          <label><span>Biography</span><textarea name="biography_md" rows="4">{{ d.biography_md or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "event" %}
+        <div class="admin-subsection">
+          <h2>Dettagli evento</h2>
+          <div class="admin-grid">
+            <label><span>Event type</span><select name="event_type">{% for option in choices.event_types %}<option value="{{ option }}" {% if d.event_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>Date label</span><input type="text" name="date_label" value="{{ d.date_label or '' }}"></label>
+          </div>
+          <label><span>Narrative</span><textarea name="narrative_md" rows="4">{{ d.narrative_md or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "document" %}
+        <div class="admin-subsection">
+          <h2>Dettagli documento</h2>
+          <div class="admin-grid">
+            <label><span>Document type</span><select name="document_type">{% for option in choices.document_types %}<option value="{{ option }}" {% if d.document_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>Date label</span><input type="text" name="date_label" value="{{ d.date_label or '' }}"></label>
+            <label><span>Archive reference</span><input type="text" name="archive_reference" value="{{ d.archive_reference or '' }}"></label>
+          </div>
+          <label><span>Editorial notes</span><textarea name="editorial_notes_md" rows="4">{{ d.editorial_notes_md or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "media" %}
+        <div class="admin-subsection">
+          <h2>Dettagli media</h2>
+          <div class="admin-grid">
+            <label><span>Media type</span><select name="media_type">{% for option in choices.media_types %}<option value="{{ option }}" {% if d.media_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>File path</span><input type="text" name="file_path" value="{{ d.file_path or '' }}"></label>
+            <label><span>Source URL</span><input type="text" name="source_url" value="{{ d.source_url or '' }}"></label>
+            <label><span>MIME type</span><input type="text" name="mime_type" value="{{ d.mime_type or '' }}"></label>
+            <label><span>Alt text</span><input type="text" name="alt_text" value="{{ d.alt_text or '' }}"></label>
+            <label><span>Credit line</span><input type="text" name="credit_line" value="{{ d.credit_line or '' }}"></label>
+            <label><span>Date label</span><input type="text" name="date_label" value="{{ d.date_label or '' }}"></label>
+          </div>
+          <label><span>Caption</span><textarea name="caption" rows="3">{{ d.caption or '' }}</textarea></label>
+          <label><span>Rights statement</span><textarea name="rights_statement" rows="2">{{ d.rights_statement or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "narrative" %}
+        <div class="admin-subsection">
+          <h2>Dettagli narrazione</h2>
+          <div class="admin-grid">
+            <label><span>Narrative type</span><select name="narrative_type">{% for option in choices.narrative_types %}<option value="{{ option }}" {% if d.narrative_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>Lead</span><input type="text" name="lead" value="{{ d.lead or '' }}"></label>
+          </div>
+          <label><span>Body markdown</span><textarea name="body_md" rows="6">{{ d.body_md or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "organization" %}
+        <div class="admin-subsection">
+          <h2>Dettagli organizzazione</h2>
+          <div class="admin-grid">
+            <label><span>Kind</span><input type="text" name="organization_kind" value="{{ d.organization_kind or '' }}"></label>
+            <label><span>Founded label</span><input type="text" name="founded_date_label" value="{{ d.founded_date_label or '' }}"></label>
+            <label><span>Dissolved label</span><input type="text" name="dissolved_date_label" value="{{ d.dissolved_date_label or '' }}"></label>
+          </div>
+          <label><span>Mission</span><textarea name="mission_md" rows="4">{{ d.mission_md or '' }}</textarea></label>
+        </div>
+      {% elif entity.entity_type == "theme" %}
+        <div class="admin-subsection">
+          <h2>Dettagli tema</h2>
+          <div class="admin-grid">
+            <label><span>Theme group</span><input type="text" name="theme_group" value="{{ d.theme_group or '' }}"></label>
+            <label><span>Color hex</span><input type="text" name="color_hex" value="{{ d.color_hex or '' }}"></label>
+            <label><span>Icon</span><input type="text" name="icon_name" value="{{ d.icon_name or '' }}"></label>
+          </div>
+        </div>
+      {% endif %}
+      <button class="button button-primary" type="submit">Salva</button>
+    </form>
+  </article>
+</section>
+
+{% if not is_new and entity.entity_type == "media" %}
+<section class="section">
+  <article class="panel admin-form-wrap">
+    <p class="eyebrow">Upload file</p>
+    {% if entity.details.file_path %}
+      <div class="admin-media-preview">
+        <img src="/uploads/{{ entity.details.file_path }}" alt="{{ entity.details.alt_text or entity.title }}">
+      </div>
+    {% endif %}
+    <form method="post" action="/admin/entities/{{ entity.id }}/upload" class="admin-form" enctype="multipart/form-data">
+      <label><span>Seleziona file immagine</span><input type="file" name="uploaded_file" accept="image/*" required></label>
+      <button class="button button-secondary" type="submit">Carica immagine</button>
+    </form>
+  </article>
+</section>
+{% endif %}
+
+{% if not is_new %}
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Media collegati</p>
+    <div class="stack-list">
+      {% for media in entity.media_links %}
+        <div class="stack-item">
+          <h3>{{ media.media_title }}</h3>
+          <p><code>{{ media.media_slug }}</code> / {{ media.usage_role }}</p>
+          <form method="post" action="/admin/entities/{{ entity.id }}/media/remove" class="admin-inline-form">
+            <input type="hidden" name="media_slug" value="{{ media.media_slug }}">
+            <input type="hidden" name="usage_role" value="{{ media.usage_role }}">
+            <button class="button button-secondary" type="submit">Rimuovi</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="stack-item"><p>Nessun media collegato.</p></div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Aggiungi media</p>
+    <form method="post" action="/admin/entities/{{ entity.id }}/media" class="admin-form">
+      <label><span>Media slug</span><input type="text" name="media_slug" required></label>
+      <label><span>Usage role</span><input type="text" name="usage_role" value="gallery"></label>
+      <label><span>Caption override</span><input type="text" name="caption_override"></label>
+      <label><span>Sort order</span><input type="number" name="sort_order" value="0"></label>
+      <button class="button button-primary" type="submit">Collega media</button>
+    </form>
+  </article>
+</section>
+{% endif %}
+{% endblock %}
