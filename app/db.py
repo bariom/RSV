@@ -4,6 +4,10 @@ import os
 from contextlib import contextmanager
 from typing import Iterator
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 try:
     import psycopg
     from psycopg.rows import dict_row

@@ -37,7 +37,9 @@ Poi apri:
 
 ## Collegamento al database remoto
 
-Imposta una variabile d ambiente:
+Puoi configurare il database in due modi:
+
+### 1. Variabile d ambiente
 
 ```bash
 DATABASE_URL=postgresql://utente:password@host:5432/dbname
@@ -49,6 +51,16 @@ Esempio PowerShell:
 $env:DATABASE_URL="postgresql://utente:password@host:5432/dbname"
 uvicorn app.main:app --reload
 ```
+
+### 2. File `.env`
+
+Crea un file `.env` nella root del progetto:
+
+```env
+DATABASE_URL=postgresql://utente:password@host:5432/dbname
+```
+
+L applicazione lo legge automaticamente all avvio.
 
 Con `DATABASE_URL` assente:
 
