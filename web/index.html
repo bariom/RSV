@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riva San Vitale | Demo Storica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">RSV</span>
+          <span class="brand-text">Archivio Storico di Riva San Vitale</span>
+        </div>
+        <div class="topbar-links">
+          <a href="#luoghi">Luoghi</a>
+          <a href="#timeline">Timeline</a>
+          <a href="#persone">Persone</a>
+          <a href="#fonti">Fonti</a>
+        </div>
+      </nav>
+
+      <section class="hero-copy">
+        <p class="eyebrow">Prima demo web</p>
+        <h1>La storia di Riva San Vitale inizia a prendere forma.</h1>
+        <p class="hero-lead">
+          Questa pagina mostra come i dati del database possano diventare un racconto navigabile:
+          luoghi, eventi, persone, documenti e fonti collegati in un'unica esperienza.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#timeline">Esplora la timeline</a>
+          <a class="button button-secondary" href="#database-preview">Vedi il modello dati</a>
+        </div>
+      </section>
+
+      <aside class="hero-card">
+        <p class="hero-card-label">Luogo in evidenza</p>
+        <h2>Battistero di San Giovanni</h2>
+        <p>
+          Probabilmente del V secolo, e il piu antico edificio cristiano interamente conservato in Svizzera.
+        </p>
+        <dl>
+          <div>
+            <dt>Tipo</dt>
+            <dd>Luogo storico</dd>
+          </div>
+          <div>
+            <dt>Periodo</dt>
+            <dd>Tarda antichita</dd>
+          </div>
+          <div>
+            <dt>Fonti</dt>
+            <dd>Comune, DSS, Ticino Turismo</dd>
+          </div>
+        </dl>
+      </aside>
+    </header>
+
+    <main>
+      <section class="section intro-grid" id="database-preview">
+        <article class="panel panel-warm">
+          <p class="eyebrow">Dal database al sito</p>
+          <h2>Un archivio che unisce racconto e struttura.</h2>
+          <p>
+            Ogni contenuto nasce da <code>entities</code> e viene arricchito da tabelle specializzate:
+            <code>places</code>, <code>people</code>, <code>events</code>, <code>documents</code>, <code>media_items</code>.
+          </p>
+        </article>
+        <article class="panel panel-dark">
+          <p class="eyebrow">Contenuti gia pronti</p>
+          <ul class="stat-list">
+            <li><strong>8</strong> luoghi</li>
+            <li><strong>10</strong> eventi</li>
+            <li><strong>3</strong> persone</li>
+            <li><strong>11</strong> fonti</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="section" id="luoghi">
+        <div class="section-heading">
+          <p class="eyebrow">Luoghi simbolo</p>
+          <h2>Tre nodi fondamentali del paesaggio storico.</h2>
+        </div>
+        <div class="card-grid" id="places-grid"></div>
+      </section>
+
+      <section class="section timeline-section" id="timeline">
+        <div class="section-heading">
+          <p class="eyebrow">Timeline</p>
+          <h2>Dalle prime attestazioni al riconoscimento UNESCO.</h2>
+        </div>
+        <div class="timeline" id="timeline-list"></div>
+      </section>
+
+      <section class="section" id="persone">
+        <div class="section-heading">
+          <p class="eyebrow">Persone</p>
+          <h2>Figure che aiutano a leggere il territorio.</h2>
+        </div>
+        <div class="people-grid" id="people-grid"></div>
+      </section>
+
+      <section class="section split-layout">
+        <article class="panel panel-plain">
+          <p class="eyebrow">Narrazione editoriale</p>
+          <h2>Riva San Vitale: dalle origini al Canton Ticino</h2>
+          <p>
+            Riva San Vitale emerge come insediamento di lunga durata, con testimonianze che risalgono alla
+            preistoria e con una forte continuita in epoca romana e cristiana. Nel Medioevo la pieve ebbe un
+            ruolo importante; nel 1798 il borgo visse la breve esperienza della Repubblica di Riva San Vitale.
+          </p>
+        </article>
+        <article class="panel panel-outline">
+          <p class="eyebrow">Relazioni</p>
+          <ul class="link-list">
+            <li>Il Battistero e collegato alla tarda antichita cristiana.</li>
+            <li>Santa Croce rimanda a Giovan Andrea Della Croce.</li>
+            <li>Il Monte San Giorgio collega paesaggio, fossili e UNESCO.</li>
+            <li>Segoma mostra l'evoluzione economica ottocentesca.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="section" id="fonti">
+        <div class="section-heading">
+          <p class="eyebrow">Fonti</p>
+          <h2>Le schede del sito possono sempre mostrare da dove arrivano i dati.</h2>
+        </div>
+        <div class="sources-list" id="sources-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

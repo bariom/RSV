@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Persona</p>
+  <h1>{{ person.title }}</h1>
+  <p class="hero-lead">{{ person.subtitle }}</p>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Profilo</p>
+    <p>{{ person.summary }}</p>
+    <p>{{ person.description }}</p>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Cronologia</p>
+    <ul class="meta-list">
+      <li><strong>Date:</strong> {{ person.dates }}</li>
+    </ul>
+  </article>
+</section>
+{% endblock %}

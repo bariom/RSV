@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Luogo</p>
+  <h1>{{ place.title }}</h1>
+  <p class="hero-lead">{{ place.subtitle }}</p>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Sintesi</p>
+    <p>{{ place.summary }}</p>
+    <p>{{ place.description }}</p>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Metadati</p>
+    <ul class="meta-list">
+      <li><strong>Periodo:</strong> {{ place.period }}</li>
+      <li><strong>Temi:</strong> {{ place.themes | join(", ") }}</li>
+    </ul>
+  </article>
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <p class="eyebrow">Fonti</p>
+    <h2>Riferimenti per questa scheda</h2>
+  </div>
+  <div class="stack-list">
+    {% for source in place.sources %}
+      <div class="stack-item">
+        <p>{{ source }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

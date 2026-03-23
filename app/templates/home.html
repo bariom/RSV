@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">{{ site.tagline }}</p>
+    <h1>{{ site.hero_title }}</h1>
+    <p class="hero-lead">{{ site.hero_lead }}</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/timeline">Apri la timeline</a>
+      <a class="button button-secondary" href="/luoghi/{{ featured_place.slug }}">Vai al luogo in evidenza</a>
+    </div>
+  </div>
+  <aside class="hero-panel">
+    <p class="eyebrow">Luogo in evidenza</p>
+    <h2>{{ featured_place.title }}</h2>
+    <p>{{ featured_place.summary }}</p>
+    <ul class="meta-list">
+      <li><strong>Periodo:</strong> {{ featured_place.period }}</li>
+      <li><strong>Temi:</strong> {{ featured_place.themes | join(", ") }}</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <p class="eyebrow">Luoghi</p>
+    <h2>Nodi principali del racconto storico.</h2>
+  </div>
+  <div class="card-grid">
+    {% for place in places %}
+      <article class="card">
+        <span class="tag">{{ place.period }}</span>
+        <h3><a href="/luoghi/{{ place.slug }}">{{ place.title }}</a></h3>
+        <p>{{ place.summary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <p class="eyebrow">Timeline</p>
+    <h2>Snodi cronologici principali.</h2>
+  </div>
+  <div class="timeline">
+    {% for event in events %}
+      <article class="timeline-item">
+        <span class="timeline-date">{{ event.date_label }}</span>
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.summary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Persone</p>
+    <h2>Figure chiave</h2>
+    <div class="stack-list">
+      {% for person in people %}
+        <div class="stack-item">
+          <h3><a href="/persone/{{ person.slug }}">{{ person.title }}</a></h3>
+          <p>{{ person.summary }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Fonti</p>
+    <h2>Base documentaria</h2>
+    <div class="stack-list">
+      {% for source in sources %}
+        <div class="stack-item">
+          <h3><a href="{{ source.url }}" target="_blank" rel="noreferrer">{{ source.title }}</a></h3>
+          <p>{{ source.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

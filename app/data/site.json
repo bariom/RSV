@@ -1,0 +1,137 @@
+{
+  "site": {
+    "title": "Archivio Storico di Riva San Vitale",
+    "tagline": "Storie, luoghi, persone e fonti del comune",
+    "hero_title": "Riva San Vitale raccontata attraverso luoghi, eventi e fonti.",
+    "hero_lead": "Questa prima applicazione web usa dati locali in JSON per simulare il sito finale. La struttura e gia pronta per essere collegata piu avanti al database remoto.",
+    "featured_place_slug": "battistero-di-san-giovanni"
+  },
+  "places": [
+    {
+      "slug": "battistero-di-san-giovanni",
+      "title": "Battistero di San Giovanni",
+      "subtitle": "Monumento paleocristiano",
+      "summary": "Il piu antico edificio cristiano interamente conservato in Svizzera.",
+      "description": "Il Battistero di San Giovanni, probabilmente del V secolo e sorto su fondazioni romane, e uno dei simboli monumentali piu forti di Riva San Vitale.",
+      "period": "V secolo",
+      "themes": ["Archeologia", "Cristianesimo"],
+      "sources": [
+        "Comune di Riva San Vitale, Battistero paleocristiano",
+        "Dizionario storico della Svizzera",
+        "Ticino Turismo"
+      ]
+    },
+    {
+      "slug": "chiesa-parrocchiale-di-san-vitale",
+      "title": "Chiesa parrocchiale di San Vitale",
+      "subtitle": "Chiesa plebana del borgo",
+      "summary": "Edificio tardobarocco sorto su una precedente basilica altomedievale.",
+      "description": "La chiesa di San Vitale e uno dei cardini della storia religiosa del borgo, con cantieri che vanno dal campanile del 1754 al restauro del 1992.",
+      "period": "1756-1759",
+      "themes": ["Cristianesimo"],
+      "sources": [
+        "Comune di Riva San Vitale, Chiesa parrocchiale di San Vitale",
+        "Dizionario storico della Svizzera"
+      ]
+    },
+    {
+      "slug": "tempio-di-santa-croce",
+      "title": "Tempio di Santa Croce",
+      "subtitle": "Grande architettura tardorinascimentale",
+      "summary": "Monumento costruito tra gli anni 1580 e il 1599 per volere di Giovan Andrea Della Croce.",
+      "description": "Il tempio di Santa Croce domina il borgo e rappresenta una delle architetture religiose piu notevoli del tardo Rinascimento in Svizzera.",
+      "period": "1582-1599",
+      "themes": ["Cristianesimo"],
+      "sources": [
+        "Comune di Riva San Vitale, Tempio di Santa Croce",
+        "Ticino Turismo"
+      ]
+    }
+  ],
+  "people": [
+    {
+      "slug": "beato-manfredo-settala",
+      "title": "Beato Manfredo Settala",
+      "subtitle": "Eremita venerato sul Monte San Giorgio",
+      "summary": "Figura devozionale legata al Monte San Giorgio e alla memoria religiosa di Riva San Vitale.",
+      "description": "Secondo la tradizione visse da eremita sul Monte San Giorgio e la sua memoria resta viva a Riva San Vitale.",
+      "dates": "m. 27 gennaio 1217"
+    },
+    {
+      "slug": "giovan-andrea-della-croce",
+      "title": "Giovan Andrea Della Croce",
+      "subtitle": "Canonico e committente",
+      "summary": "Promotore del tempio di Santa Croce alla fine del XVI secolo.",
+      "description": "E ricordato come il committente del tempio di Santa Croce, costruito presso la dimora di famiglia.",
+      "dates": "fine XVI secolo"
+    },
+    {
+      "slug": "don-gottardo-zurini",
+      "title": "Don Gottardo Zurini",
+      "subtitle": "Arciprete di Riva San Vitale",
+      "summary": "Primo presidente del Gran Consiglio del Canton Ticino secondo la memoria civica locale.",
+      "description": "Nato il 5 aprile 1746 e morto a Riva San Vitale il 6 marzo 1815, fu arciprete di Riva e figura pubblica di primo piano.",
+      "dates": "1746-1815"
+    }
+  ],
+  "events": [
+    {
+      "slug": "toponimo-primo-sobenno-774",
+      "title": "Primo toponimo documentato: Primo Sobenno",
+      "date_label": "774",
+      "summary": "Una delle piu antiche forme del nome del villaggio."
+    },
+    {
+      "slug": "menzione-ripa-sancti-vitalis-1115",
+      "title": "Menzione di Ripa Sancti Vitalis",
+      "date_label": "1115",
+      "summary": "Il centro compare tra i beni dell abbazia di Sant Abbondio di Como."
+    },
+    {
+      "slug": "costruzione-del-battistero",
+      "title": "Costruzione del Battistero di San Giovanni",
+      "date_label": "circa 500",
+      "summary": "Il Battistero testimonia la fase paleocristiana del borgo."
+    },
+    {
+      "slug": "repubblica-di-riva-san-vitale-1798",
+      "title": "Repubblica di Riva San Vitale",
+      "date_label": "23 febbraio - 16 marzo 1798",
+      "summary": "Breve esperienza politica nata nel clima rivoluzionario del Mendrisiotto."
+    },
+    {
+      "slug": "fondazione-del-canton-ticino-1803",
+      "title": "Fondazione del Canton Ticino",
+      "date_label": "1803",
+      "summary": "Riva San Vitale entra nel nuovo quadro cantonale."
+    },
+    {
+      "slug": "monte-san-giorgio-sito-unesco-2003",
+      "title": "Monte San Giorgio nella Lista del Patrimonio Mondiale",
+      "date_label": "2003, ampliamento 2010",
+      "summary": "Il paesaggio fossilifero ottiene il riconoscimento UNESCO."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Dizionario storico della Svizzera",
+      "text": "Profilo storico sintetico su Riva San Vitale, pieve, monumenti e sviluppo del borgo.",
+      "url": "https://hls-dhs-dss.ch/it/articles/002242/"
+    },
+    {
+      "title": "Comune di Riva San Vitale",
+      "text": "Schede su cenni storici, Battistero paleocristiano, San Vitale, Santa Croce e nucleo storico.",
+      "url": "https://www.rivasanvitale.ch/Cenni-storici-a4b3f900"
+    },
+    {
+      "title": "Lugano Storia",
+      "text": "Oggetti fotografici e documentari collegati a Riva San Vitale.",
+      "url": "https://patrimonio.luganocultura.ch/luoghi/8269-riva-san-vitale"
+    },
+    {
+      "title": "UNESCO World Heritage Centre",
+      "text": "Scheda sul Monte San Giorgio e sul riconoscimento internazionale del sito.",
+      "url": "https://whc.unesco.org/en/list/1090"
+    }
+  ]
+}

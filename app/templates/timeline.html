@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Timeline</p>
+  <h1>Linea del tempo di Riva San Vitale</h1>
+  <p class="hero-lead">Una prima pagina dedicata agli eventi principali gia presenti nel modello dati.</p>
+</section>
+
+<section class="section">
+  <div class="timeline">
+    {% for event in events %}
+      <article class="timeline-item">
+        <span class="timeline-date">{{ event.date_label }}</span>
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.summary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
