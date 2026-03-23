@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Luoghi</p>
+  <h1>Luoghi di Riva San Vitale</h1>
+  <p class="hero-lead">Una prima vista d insieme dei luoghi storici presenti nel database.</p>
+</section>
+
+<section class="section">
+  <div class="card-grid">
+    {% for place in places %}
+      <article class="card">
+        <span class="tag">{{ place.period }}</span>
+        <h3><a href="/luoghi/{{ place.slug }}">{{ place.title }}</a></h3>
+        <p>{{ place.subtitle }}</p>
+        <p>{{ place.summary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

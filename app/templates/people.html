@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Persone</p>
+  <h1>Figure di Riva San Vitale</h1>
+  <p class="hero-lead">Una prima vista d insieme delle persone collegate alla storia del comune.</p>
+</section>
+
+<section class="section">
+  <div class="card-grid">
+    {% for person in people %}
+      <article class="card">
+        <span class="tag">{{ person.dates }}</span>
+        <h3><a href="/persone/{{ person.slug }}">{{ person.title }}</a></h3>
+        <p>{{ person.subtitle }}</p>
+        <p>{{ person.summary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -7,7 +7,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.repository import get_homepage_context, get_person, get_place, get_timeline
+from app.repository import (
+    get_homepage_context,
+    get_people,
+    get_person,
+    get_place,
+    get_places,
+    get_timeline,
+)
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -28,6 +35,22 @@ def timeline_page(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         "timeline.html",
         {"request": request, "events": get_timeline(), "site_title": "Timeline"},
+    )
+
+
+@app.get("/luoghi", response_class=HTMLResponse)
+def places_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        "places.html",
+        {"request": request, "places": get_places(), "site_title": "Luoghi"},
+    )
+
+
+@app.get("/persone", response_class=HTMLResponse)
+def people_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        "people.html",
+        {"request": request, "people": get_people(), "site_title": "Persone"},
     )
 
 

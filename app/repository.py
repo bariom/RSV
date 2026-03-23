@@ -40,6 +40,55 @@ def get_timeline() -> list[dict[str, Any]]:
     return load_site_data()["events"]
 
 
+def get_places() -> list[dict[str, Any]]:
+    if has_database_config():
+        with get_connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT
+                    e.slug,
+                    e.title,
+                    e.subtitle,
+                    e.summary,
+                    e.description_md AS description,
+                    COALESCE(p.geo_notes, p.address_text, '') AS period
+                FROM entities e
+                JOIN places p ON p.entity_id = e.id
+                WHERE e.status = 'published'
+                ORDER BY e.sort_order, e.title
+                """
+            ).fetchall()
+        return [dict(row) for row in rows]
+    return load_site_data()["places"]
+
+
+def get_people() -> list[dict[str, Any]]:
+    if has_database_config():
+        with get_connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT
+                    e.slug,
+                    e.title,
+                    e.subtitle,
+                    e.summary,
+                    COALESCE(p.biography_md, e.description_md, e.summary) AS description,
+                    COALESCE(
+                        NULLIF(CONCAT_WS(' - ', p.birth_date_label, p.death_date_label), ' - '),
+                        p.death_date_label,
+                        p.birth_date_label,
+                        ''
+                    ) AS dates
+                FROM entities e
+                JOIN people p ON p.entity_id = e.id
+                WHERE e.status = 'published'
+                ORDER BY e.sort_order, e.title
+                """
+            ).fetchall()
+        return [dict(row) for row in rows]
+    return load_site_data()["people"]
+
+
 def get_place(slug: str) -> dict[str, Any] | None:
     if has_database_config():
         return _get_place_from_db(slug)
