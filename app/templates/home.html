@@ -16,7 +16,7 @@
     <h2>{{ featured_place.title }}</h2>
     <p>{{ featured_place.summary }}</p>
     <ul class="meta-list">
-      <li><strong>Periodo:</strong> {{ featured_place.period }}</li>
+      <li><strong>Tipo:</strong> {{ featured_place.category }}</li>
       <li><strong>Temi:</strong> {{ featured_place.themes | join(", ") }}</li>
     </ul>
   </aside>
@@ -30,7 +30,7 @@
   <div class="card-grid">
     {% for place in places %}
       <article class="card">
-        <span class="tag">{{ place.period }}</span>
+        <span class="tag">{{ place.category }}</span>
         <h3><a href="/luoghi/{{ place.slug }}">{{ place.title }}</a></h3>
         <p>{{ place.summary }}</p>
       </article>

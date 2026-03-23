@@ -23,6 +23,7 @@ ENTITY_TYPES = [
 PUBLICATION_STATUSES = ["draft", "review", "published", "archived"]
 PLACE_TYPES = [
     "municipality",
+    "quarter",
     "hamlet",
     "building",
     "religious_site",
@@ -34,6 +35,20 @@ PLACE_TYPES = [
     "cemetery",
     "other",
 ]
+PLACE_TYPE_LABELS = {
+    "municipality": "comune",
+    "quarter": "quartiere",
+    "hamlet": "frazione",
+    "building": "edificio",
+    "religious_site": "luogo religioso",
+    "street": "strada",
+    "square": "piazza",
+    "landmark": "luogo notevole",
+    "natural_site": "luogo naturale",
+    "archaeological_site": "sito archeologico",
+    "cemetery": "cimitero",
+    "other": "altro",
+}
 EVENT_TYPES = [
     "political",
     "religious",
@@ -110,6 +125,7 @@ def get_admin_choices() -> dict[str, list[str]]:
         "entity_types": ENTITY_TYPES,
         "publication_statuses": PUBLICATION_STATUSES,
         "place_types": PLACE_TYPES,
+        "place_type_labels": PLACE_TYPE_LABELS,
         "event_types": EVENT_TYPES,
         "document_types": DOCUMENT_TYPES,
         "media_types": MEDIA_TYPES,

@@ -48,7 +48,7 @@
         <div class="admin-subsection">
           <h2>Dettagli luogo</h2>
           <div class="admin-grid">
-            <label><span>Place type</span><select name="place_type">{% for option in choices.place_types %}<option value="{{ option }}" {% if d.place_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+            <label><span>Tipologia luogo</span><select name="place_type">{% for option in choices.place_types %}<option value="{{ option }}" {% if d.place_type == option %}selected{% endif %}>{{ choices.place_type_labels.get(option, option) }}</option>{% endfor %}</select></label>
             <label><span>Current name</span><input type="text" name="current_name" value="{{ d.current_name or '' }}"></label>
             <label><span>Historical name</span><input type="text" name="historical_name" value="{{ d.historical_name or '' }}"></label>
             <label><span>Address</span><input type="text" name="address_text" value="{{ d.address_text or '' }}"></label>

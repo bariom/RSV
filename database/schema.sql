@@ -33,6 +33,7 @@ CREATE TYPE source_type AS ENUM (
 
 CREATE TYPE place_type AS ENUM (
     'municipality',
+    'quarter',
     'hamlet',
     'building',
     'religious_site',
