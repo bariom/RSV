@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,7 @@ from app.db import get_connection, has_database_config
 from app.storage import build_upload_url
 
 DATA_PATH = Path(__file__).parent / "data" / "site.json"
+CURRENT_YEAR = datetime.now().year
 
 PLACE_TYPE_LABELS = {
     "municipality": "comune",
@@ -191,6 +193,8 @@ def _enrich_timeline_event(row: dict[str, Any]) -> dict[str, Any]:
     end_year = _extract_year(row.get("end_date"))
     sort_year = start_year if start_year is not None else _infer_year_from_label(row.get("date_label"))
     end_sort_year = end_year if end_year is not None else sort_year
+    timeline_sort_year = CURRENT_YEAR if sort_year == 9999 else min(sort_year, CURRENT_YEAR)
+    timeline_end_year = CURRENT_YEAR if end_sort_year == 9999 else min(end_sort_year, CURRENT_YEAR)
     era = _get_timeline_era(sort_year)
     return {
         **row,
@@ -199,6 +203,8 @@ def _enrich_timeline_event(row: dict[str, Any]) -> dict[str, Any]:
         "sort_year": sort_year,
         "sort_year_label": _format_sort_year_label(sort_year),
         "end_sort_year": end_sort_year,
+        "timeline_sort_year": timeline_sort_year,
+        "timeline_end_year": timeline_end_year,
         "is_span": end_sort_year != sort_year,
         "era_key": era["key"],
         "era_title": era["title"],
@@ -225,19 +231,19 @@ def get_timeline_views() -> dict[str, Any]:
         )
 
     if events:
-        min_year = min(event["sort_year"] for event in events)
-        max_year = max(event["end_sort_year"] for event in events)
+        min_year = min(event["timeline_sort_year"] for event in events)
+        max_year = min(max(event["timeline_end_year"] for event in events), CURRENT_YEAR)
     else:
         min_year = 0
-        max_year = 0
+        max_year = CURRENT_YEAR
 
     span_years = max(max_year - min_year, 1)
     lane_count = 4
     lane_positions = [float("-inf")] * lane_count
     graphic_events: list[dict[str, Any]] = []
     for event in events:
-        position_pct = ((event["sort_year"] - min_year) / span_years) * 100
-        span_pct = max(((event["end_sort_year"] - event["sort_year"]) / span_years) * 100, 1.25 if event["is_span"] else 0)
+        position_pct = ((event["timeline_sort_year"] - min_year) / span_years) * 100
+        span_pct = max(((event["timeline_end_year"] - event["timeline_sort_year"]) / span_years) * 100, 1.25 if event["is_span"] else 0)
         lane = min(range(lane_count), key=lambda idx: lane_positions[idx])
         lane_positions[lane] = position_pct + max(span_pct, 4.5)
         graphic_events.append(
