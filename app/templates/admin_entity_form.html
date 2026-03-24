@@ -182,6 +182,18 @@
       <label><span>Sort order</span><input type="number" name="sort_order" value="0"></label>
       <button class="button button-primary" type="submit">Collega media</button>
     </form>
+    {% if entity.entity_type == "person" %}
+      <hr>
+      <p class="eyebrow">Carica più immagini</p>
+      <form method="post" action="/admin/entities/{{ entity.id }}/media/bulk-upload" class="admin-form" enctype="multipart/form-data">
+        <label><span>Immagini</span><input type="file" name="uploaded_files" accept="image/*" multiple required></label>
+        <label><span>Usage role</span><input type="text" name="usage_role" value="gallery"></label>
+        <label><span>Credit line comune</span><input type="text" name="credit_line"></label>
+        <label><span>Diritti comuni</span><input type="text" name="rights_statement"></label>
+        <label><span>Date label comune</span><input type="text" name="date_label"></label>
+        <button class="button button-secondary" type="submit">Carica e collega immagini</button>
+      </form>
+    {% endif %}
   </article>
 </section>
 

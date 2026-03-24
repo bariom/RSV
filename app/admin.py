@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -627,6 +628,125 @@ def remove_media_link_admin(entity_id: str, media_slug: str, usage_role: str) ->
         connection.commit()
 
 
+def create_linked_media_uploads_admin(
+    entity_id: str,
+    files: list[dict[str, Any]],
+    usage_role: str = "gallery",
+    credit_line: str = "",
+    rights_statement: str = "",
+    date_label: str = "",
+) -> int:
+    valid_files = [item for item in files if item.get("content")]
+    if not valid_files:
+        raise ValueError("Nessun file valido caricato")
+
+    with get_connection() as connection:
+        parent_entity = connection.execute(
+            """
+            SELECT slug, title
+            FROM entities
+            WHERE id = %s::uuid
+            """,
+            (entity_id,),
+        ).fetchone()
+        if not parent_entity:
+            raise ValueError("Entità non trovata")
+
+        max_sort_order_row = connection.execute(
+            """
+            SELECT COALESCE(MAX(sort_order), 0) AS max_sort_order
+            FROM entity_media
+            WHERE entity_id = %s::uuid
+            """,
+            (entity_id,),
+        ).fetchone()
+        next_sort_order = int(max_sort_order_row["max_sort_order"] or 0) + 1
+
+        for index, item in enumerate(valid_files, start=1):
+            filename = item.get("filename") or "immagine"
+            stem = Path(filename).stem or f"immagine-{index}"
+            base_slug = _slugify(f"{parent_entity['slug']}-{stem}")
+            media_slug = _ensure_unique_media_slug(connection, base_slug)
+            title = _prettify_filename(stem)
+
+            media_entity_id = connection.execute(
+                """
+                INSERT INTO entities (
+                    entity_type,
+                    slug,
+                    title,
+                    language_code,
+                    status,
+                    sort_order,
+                    metadata
+                ) VALUES (
+                    'media',
+                    %s,
+                    %s,
+                    'it',
+                    'published',
+                    0,
+                    '{}'::jsonb
+                )
+                RETURNING id::text AS id
+                """,
+                (media_slug, title),
+            ).fetchone()["id"]
+
+            relative_path, mime_type = build_media_storage_path(
+                media_slug,
+                filename,
+                item.get("content_type"),
+            )
+            destination = get_admin_config().upload_dir / relative_path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(item["content"])
+
+            connection.execute(
+                """
+                INSERT INTO media_items (
+                    entity_id,
+                    media_type,
+                    file_path,
+                    mime_type,
+                    alt_text,
+                    caption,
+                    credit_line,
+                    rights_statement,
+                    date_label
+                ) VALUES (%s::uuid, 'image', %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    media_entity_id,
+                    relative_path,
+                    mime_type,
+                    title,
+                    title,
+                    credit_line or None,
+                    rights_statement or None,
+                    date_label or None,
+                ),
+            )
+
+            connection.execute(
+                """
+                INSERT INTO entity_media (
+                    entity_id,
+                    media_entity_id,
+                    usage_role,
+                    sort_order
+                ) VALUES (%s::uuid, %s::uuid, %s, %s)
+                ON CONFLICT (entity_id, media_entity_id, usage_role)
+                DO UPDATE SET
+                    sort_order = EXCLUDED.sort_order
+                """,
+                (entity_id, media_entity_id, usage_role, next_sort_order + index - 1),
+            )
+
+        connection.commit()
+    return len(valid_files)
+
+
 def save_media_upload_admin(entity_id: str, filename: str, content_type: str | None, content: bytes) -> None:
     if not content:
         raise ValueError("File vuoto")
@@ -667,6 +787,28 @@ def save_media_upload_admin(entity_id: str, filename: str, content_type: str | N
             (entity_id, relative_path, mime_type),
         )
         connection.commit()
+
+
+def _slugify(value: str) -> str:
+    normalized = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
+    return normalized or "media"
+
+
+def _prettify_filename(value: str) -> str:
+    cleaned = re.sub(r"[_-]+", " ", value).strip()
+    return cleaned[:1].upper() + cleaned[1:] if cleaned else "Immagine"
+
+
+def _ensure_unique_media_slug(connection: Any, base_slug: str) -> str:
+    slug = base_slug
+    counter = 2
+    while connection.execute(
+        "SELECT 1 FROM entities WHERE slug = %s",
+        (slug,),
+    ).fetchone():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    return slug
 
 
 def _load_entity_details(connection: Any, entity_id: str, entity_type: str) -> dict[str, Any]:
