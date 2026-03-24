@@ -259,13 +259,13 @@ h3 { font-size: 1.8rem; }
   margin-bottom: 0.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: end;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
 .graphic-timeline-intro {
-  flex: 1 1 28rem;
+  flex: 1 1 14rem;
 }
 
 .graphic-timeline-actions {
@@ -298,9 +298,9 @@ h3 { font-size: 1.8rem; }
 
 .graphic-detail-card {
   margin-bottom: 0.5rem;
-  height: 13.2rem;
-  max-width: 24rem;
-  padding: 0.9rem 1rem;
+  height: 15.8rem;
+  max-width: 34rem;
+  padding: 1rem 1.15rem;
   display: grid;
   grid-template-rows: auto auto auto 1fr;
   align-content: start;
@@ -311,7 +311,7 @@ h3 { font-size: 1.8rem; }
   margin-bottom: 0.55rem;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   overflow: hidden;
 }
 
@@ -321,7 +321,7 @@ h3 { font-size: 1.8rem; }
   color: var(--muted);
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 5;
   overflow: hidden;
 }
 
