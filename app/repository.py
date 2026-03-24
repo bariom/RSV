@@ -40,6 +40,20 @@ EVENT_TYPE_LABELS = {
     "other": "altro",
 }
 
+EVENT_TYPE_ICONS = {
+    "political": "PO",
+    "religious": "RE",
+    "social": "SO",
+    "economic": "EC",
+    "cultural": "CU",
+    "military": "MI",
+    "architectural": "AR",
+    "archaeological": "SC",
+    "administrative": "IS",
+    "disaster": "CR",
+    "other": "RS",
+}
+
 TIMELINE_ERAS = (
     ("preistoria", "Preistoria", -5000, -1, "Dalle prime frequentazioni del territorio fino all'età preromana."),
     ("romana", "Età romana", 1, 499, "Riva come approdo, spazio di scambi e luogo di testimonianze epigrafiche."),
@@ -66,6 +80,12 @@ def _localize_event_type(value: str | None) -> str:
     if not value:
         return ""
     return EVENT_TYPE_LABELS.get(value, value.replace("_", " "))
+
+
+def _event_icon(value: str | None) -> str:
+    if not value:
+        return "RS"
+    return EVENT_TYPE_ICONS.get(value, "RS")
 
 
 def _normalize_roman_century(value: str) -> int | None:
@@ -159,6 +179,7 @@ def _enrich_timeline_event(row: dict[str, Any]) -> dict[str, Any]:
     return {
         **row,
         "event_type_label": _localize_event_type(row.get("event_type")),
+        "event_icon": _event_icon(row.get("event_type")),
         "sort_year": sort_year,
         "sort_year_label": _format_sort_year_label(sort_year),
         "end_sort_year": end_sort_year,
@@ -195,16 +216,21 @@ def get_timeline_views() -> dict[str, Any]:
         max_year = 0
 
     span_years = max(max_year - min_year, 1)
+    lane_count = 4
+    lane_positions = [float("-inf")] * lane_count
     graphic_events: list[dict[str, Any]] = []
-    for index, event in enumerate(events):
+    for event in events:
         position_pct = ((event["sort_year"] - min_year) / span_years) * 100
         span_pct = max(((event["end_sort_year"] - event["sort_year"]) / span_years) * 100, 1.25 if event["is_span"] else 0)
+        lane = min(range(lane_count), key=lambda idx: lane_positions[idx])
+        lane_positions[lane] = position_pct + max(span_pct, 4.5)
         graphic_events.append(
             {
                 **event,
                 "graphic_position_pct": round(position_pct, 3),
                 "graphic_span_pct": round(span_pct, 3),
-                "graphic_row": index % 2,
+                "graphic_lane": lane,
+                "graphic_pole_height": 74 + (lane % 2) * 26 + (lane // 2) * 34,
             }
         )
 
@@ -215,6 +241,7 @@ def get_timeline_views() -> dict[str, Any]:
         "range_start": _format_sort_year_label(min_year),
         "range_end": _format_sort_year_label(max_year),
         "range_years": span_years,
+        "graphic_base_width": max(2200, len(events) * 165),
     }
 
 

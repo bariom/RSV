@@ -58,11 +58,18 @@
 <section class="section timeline-panel" data-timeline-panel="grafica" hidden>
   <div class="graphic-timeline-shell horizontal-timeline">
     <div class="graphic-timeline-header">
-      <p class="eyebrow">Vista grafica</p>
-      <p class="hero-lead">Scorri orizzontalmente per seguire la cronologia lungo l'asse del tempo.</p>
+      <div>
+        <p class="eyebrow">Vista grafica</p>
+        <p class="hero-lead">Usa lo zoom e scorri orizzontalmente. Le milestone si espandono al passaggio del mouse.</p>
+      </div>
+      <label class="timeline-zoom-control">
+        <span>Zoom</span>
+        <input id="timelineZoom" type="range" min="1" max="2.4" step="0.1" value="1.3">
+        <output id="timelineZoomValue">130%</output>
+      </label>
     </div>
     <div class="graphic-timeline-scroll">
-      <div class="graphic-timeline-canvas">
+      <div class="graphic-timeline-canvas" style="--timeline-base-width: {{ graphic_base_width }}px; --timeline-zoom: 1.3;">
         <div class="graphic-timeline-scale">
           {% for era in eras %}
             <span>{{ era.title }}</span>
@@ -75,13 +82,15 @@
         <div class="graphic-timeline-rail"></div>
         {% for event in graphic_events %}
           <article
-            class="graphic-node graphic-node-{{ event.graphic_row }}"
-            style="left: {{ event.graphic_position_pct }}%; --span: {{ event.graphic_span_pct }}%;"
+            class="graphic-node graphic-lane-{{ event.graphic_lane }}"
+            style="left: {{ event.graphic_position_pct }}%; --span: {{ event.graphic_span_pct }}%; --pole-height: {{ event.graphic_pole_height }}px;"
           >
-            <span class="graphic-node-dot"></span>
             {% if event.is_span %}
               <span class="graphic-node-span"></span>
             {% endif %}
+            <button class="graphic-node-trigger" type="button" aria-label="{{ event.title }}">
+              <span class="graphic-node-icon">{{ event.event_icon }}</span>
+            </button>
             <div class="graphic-node-card">
               <div class="timeline-meta-row">
                 <span class="timeline-date">{{ event.date_label }}</span>
@@ -104,6 +113,9 @@
   (() => {
     const buttons = Array.from(document.querySelectorAll("[data-timeline-view]"));
     const panels = Array.from(document.querySelectorAll("[data-timeline-panel]"));
+    const zoomInput = document.getElementById("timelineZoom");
+    const zoomValue = document.getElementById("timelineZoomValue");
+    const canvas = document.querySelector(".graphic-timeline-canvas");
 
     const activate = (view) => {
       buttons.forEach((button) => {
@@ -119,6 +131,16 @@
     buttons.forEach((button) => {
       button.addEventListener("click", () => activate(button.dataset.timelineView));
     });
+
+    if (zoomInput && zoomValue && canvas) {
+      const applyZoom = () => {
+        const value = Number(zoomInput.value);
+        canvas.style.setProperty("--timeline-zoom", String(value));
+        zoomValue.value = `${Math.round(value * 100)}%`;
+      };
+      zoomInput.addEventListener("input", applyZoom);
+      applyZoom();
+    }
   })();
 </script>
 {% endblock %}
