@@ -294,7 +294,7 @@ def get_timeline_views() -> dict[str, Any]:
                 "graphic_position_pct": round(position_pct, 3),
                 "graphic_span_pct": round(span_pct, 3),
                 "graphic_lane": lane,
-                "graphic_pole_height": 74 + (lane % 2) * 26 + (lane // 2) * 34,
+                "graphic_pole_height": 34 + (lane % 2) * 16 + (lane // 2) * 18,
             }
         )
 

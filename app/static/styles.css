@@ -256,12 +256,16 @@ h3 { font-size: 1.8rem; }
 }
 
 .graphic-timeline-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: start;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.graphic-timeline-intro {
+  flex: 1 1 28rem;
 }
 
 .graphic-timeline-actions {
@@ -293,29 +297,30 @@ h3 { font-size: 1.8rem; }
 }
 
 .graphic-detail-card {
-  margin-bottom: 1rem;
-  min-height: 11rem;
-  max-width: 30rem;
+  margin-bottom: 0.5rem;
+  min-height: 6.5rem;
+  max-width: 24rem;
+  padding: 0.9rem 1rem;
 }
 
 .graphic-timeline-scroll {
   overflow-x: auto;
-  overflow-y: auto;
-  padding-bottom: 0.75rem;
+  overflow-y: hidden;
+  padding-bottom: 0.45rem;
 }
 
 .graphic-timeline-canvas {
   position: relative;
   width: calc(var(--timeline-base-width) * var(--timeline-zoom, 1));
   min-width: calc(var(--timeline-base-width) * var(--timeline-zoom, 1));
-  min-height: 720px;
+  min-height: 280px;
 }
 
 .graphic-timeline-scale {
   position: absolute;
   left: 0;
   right: 0;
-  top: 3.2rem;
+  top: 0.65rem;
   display: grid;
   grid-template-columns: repeat(6, minmax(160px, 1fr));
   gap: 1rem;
@@ -330,7 +335,7 @@ h3 { font-size: 1.8rem; }
   inset: 0 0 auto 0;
   height: 2rem;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   padding: 0;
 }
 
@@ -348,23 +353,23 @@ h3 { font-size: 1.8rem; }
 
 .graphic-tick {
   position: absolute;
-  top: 44%;
+  top: 78%;
   transform: translate(-50%, -50%);
 }
 
 .graphic-tick-line {
   display: block;
   width: 1px;
-  height: 34px;
+  height: 12px;
   background: rgba(36, 25, 20, 0.18);
-  transform: translateY(-22px);
+  transform: translateY(-8px);
 }
 
 .graphic-timeline-rail {
   position: absolute;
   left: 0;
   right: 0;
-  top: 44%;
+  top: 78%;
   height: 5px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(157, 77, 52, 0.4), rgba(50, 85, 71, 0.45));
@@ -373,7 +378,7 @@ h3 { font-size: 1.8rem; }
 
 .graphic-node {
   position: absolute;
-  top: 44%;
+  top: 78%;
   transform: translate(-50%, -50%);
 }
 
@@ -622,6 +627,6 @@ h3 { font-size: 1.8rem; }
   }
 
   .graphic-timeline-canvas {
-    min-height: 760px;
+    min-height: 320px;
   }
 }
