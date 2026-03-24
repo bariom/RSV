@@ -87,6 +87,18 @@ body {
   padding: 1.5rem;
 }
 
+.hero-panel-link {
+  color: inherit;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.hero-panel-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(157, 77, 52, 0.28);
+  box-shadow: 0 20px 52px rgba(63, 37, 24, 0.14);
+}
+
 .page-intro {
   padding-left: 0;
 }

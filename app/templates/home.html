@@ -11,7 +11,7 @@
       <a class="button button-secondary" href="/luoghi/{{ featured_place.slug }}">Vai al luogo in evidenza</a>
     </div>
   </div>
-  <aside class="hero-panel">
+  <a class="hero-panel hero-panel-link" href="/luoghi/{{ featured_place.slug }}">
     <p class="eyebrow">Luogo in evidenza</p>
     <h2>{{ featured_place.title }}</h2>
     <p>{{ featured_place.summary }}</p>
@@ -19,7 +19,7 @@
       <li><strong>Tipo:</strong> {{ featured_place.category }}</li>
       <li><strong>Temi:</strong> {{ featured_place.themes | join(", ") }}</li>
     </ul>
-  </aside>
+  </a>
 </section>
 
 <section class="section">

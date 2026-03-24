@@ -82,3 +82,6 @@ Se preferisci, nel prossimo passo posso fare una delle due cose:
 
 1. trasformare questo schema in migration per il framework che userai nel sito;
 2. preparare alcune query utili per timeline, schede luogo e pagine persona.
+
+ Per avviare un server di sviluppo con FastAPI e PostgreSQL, puoi usare il comando:
+ uvicorn app.main:app --host 0.0.0.0 --port 8000
