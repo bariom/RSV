@@ -167,10 +167,31 @@ def _format_sort_year_label(year: int) -> str:
 
 def _build_timeline_ticks(min_year: int, max_year: int, count: int = 9) -> list[dict[str, Any]]:
     span_years = max(max_year - min_year, 1)
-    ticks: list[dict[str, Any]] = []
-    for index in range(count):
-        ratio = index / (count - 1) if count > 1 else 0
-        year = round(min_year + (span_years * ratio))
+    if span_years <= 80:
+        step = 10
+    elif span_years <= 160:
+        step = 20
+    elif span_years <= 320:
+        step = 25
+    elif span_years <= 800:
+        step = 50
+    elif span_years <= 1600:
+        step = 100
+    else:
+        step = 250
+
+    first_tick = ((min_year + step - 1) // step) * step
+    ticks: list[dict[str, Any]] = [
+        {
+            "year": min_year,
+            "label": _format_sort_year_label(min_year),
+            "position_pct": 0.0,
+        }
+    ]
+
+    year = first_tick
+    while year < max_year:
+        ratio = (year - min_year) / span_years
         ticks.append(
             {
                 "year": year,
@@ -178,7 +199,24 @@ def _build_timeline_ticks(min_year: int, max_year: int, count: int = 9) -> list[
                 "position_pct": round(ratio * 100, 3),
             }
         )
-    return ticks
+        year += step
+
+    ticks.append(
+        {
+            "year": max_year,
+            "label": _format_sort_year_label(max_year),
+            "position_pct": 100.0,
+        }
+    )
+
+    deduped: list[dict[str, Any]] = []
+    seen: set[int] = set()
+    for tick in ticks:
+        if tick["year"] in seen:
+            continue
+        deduped.append(tick)
+        seen.add(tick["year"])
+    return deduped
 
 
 def _get_timeline_era(year: int) -> dict[str, str]:

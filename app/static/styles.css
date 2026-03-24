@@ -238,7 +238,7 @@ h3 { font-size: 1.8rem; }
 }
 
 .era-event-card,
-.graphic-node-card {
+.graphic-detail-card {
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 252, 247, 0.82);
@@ -290,6 +290,12 @@ h3 { font-size: 1.8rem; }
 
 .timeline-expand-button {
   white-space: nowrap;
+}
+
+.graphic-detail-card {
+  margin-bottom: 1rem;
+  min-height: 11rem;
+  max-width: 30rem;
 }
 
 .graphic-timeline-scroll {
@@ -414,23 +420,6 @@ h3 { font-size: 1.8rem; }
   text-transform: uppercase;
 }
 
-.graphic-node-card {
-  position: absolute;
-  left: 50%;
-  width: 290px;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease, transform 180ms ease;
-  z-index: 4;
-}
-
-.graphic-node:hover .graphic-node-card,
-.graphic-node:focus-within .graphic-node-card {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 .graphic-node::before {
   content: "";
   position: absolute;
@@ -450,30 +439,6 @@ h3 { font-size: 1.8rem; }
 .graphic-lane-3::before {
   top: 0;
   height: var(--pole-height);
-}
-
-.graphic-lane-0 .graphic-node-card,
-.graphic-lane-2 .graphic-node-card {
-  bottom: calc(100% + var(--pole-height));
-}
-
-.graphic-lane-1 .graphic-node-card,
-.graphic-lane-3 .graphic-node-card {
-  top: calc(var(--pole-height) + 18px);
-}
-
-.graphic-lane-0:hover .graphic-node-card,
-.graphic-lane-0:focus-within .graphic-node-card,
-.graphic-lane-2:hover .graphic-node-card,
-.graphic-lane-2:focus-within .graphic-node-card {
-  transform: translateX(-50%) translateY(-8px);
-}
-
-.graphic-lane-1:hover .graphic-node-card,
-.graphic-lane-1:focus-within .graphic-node-card,
-.graphic-lane-3:hover .graphic-node-card,
-.graphic-lane-3:focus-within .graphic-node-card {
-  transform: translateX(-50%) translateY(8px);
 }
 
 .graphic-year {

@@ -71,6 +71,18 @@
         <button id="timelineExpandButton" class="button button-secondary timeline-expand-button" type="button">Amplia vista</button>
       </div>
     </div>
+    {% set active_event = graphic_events[0] if graphic_events else None %}
+    {% if active_event %}
+      <article class="graphic-detail-card" id="graphicDetailCard">
+        <div class="timeline-meta-row">
+          <span class="timeline-date" id="graphicDetailDate">{{ active_event.date_label }}</span>
+          <span class="graphic-year" id="graphicDetailYear">{{ active_event.sort_year_label }}</span>
+        </div>
+        <span class="tag" id="graphicDetailType">{{ active_event.event_type_label }}</span>
+        <h3 id="graphicDetailTitle">{{ active_event.title }}</h3>
+        <p id="graphicDetailSummary">{{ active_event.summary }}</p>
+      </article>
+    {% endif %}
     <div class="graphic-timeline-scroll">
       <div class="graphic-timeline-canvas" style="--timeline-base-width: {{ graphic_base_width }}px; --timeline-zoom: 1.5;">
         <div class="graphic-timeline-scale">
@@ -99,20 +111,18 @@
             {% if event.is_span %}
               <span class="graphic-node-span"></span>
             {% endif %}
-            <button class="graphic-node-trigger" type="button" aria-label="{{ event.title }}">
+            <button
+              class="graphic-node-trigger"
+              type="button"
+              aria-label="{{ event.title }}"
+              data-event-date="{{ event.date_label }}"
+              data-event-year="{{ event.sort_year_label }}"
+              data-event-type="{{ event.event_type_label }}"
+              data-event-title="{{ event.title }}"
+              data-event-summary="{{ event.summary }}"
+            >
               <span class="graphic-node-icon">{{ event.event_icon }}</span>
             </button>
-            <div class="graphic-node-card">
-              <div class="timeline-meta-row">
-                <span class="timeline-date">{{ event.date_label }}</span>
-                <span class="graphic-year">{{ event.sort_year_label }}</span>
-              </div>
-              {% if event.event_type_label %}
-                <span class="tag">{{ event.event_type_label }}</span>
-              {% endif %}
-              <h3>{{ event.title }}</h3>
-              <p>{{ event.summary }}</p>
-            </div>
           </article>
         {% endfor %}
       </div>
@@ -129,6 +139,12 @@
     const canvas = document.querySelector(".graphic-timeline-canvas");
     const timelineShell = document.getElementById("graphicTimelineShell");
     const expandButton = document.getElementById("timelineExpandButton");
+    const detailDate = document.getElementById("graphicDetailDate");
+    const detailYear = document.getElementById("graphicDetailYear");
+    const detailType = document.getElementById("graphicDetailType");
+    const detailTitle = document.getElementById("graphicDetailTitle");
+    const detailSummary = document.getElementById("graphicDetailSummary");
+    const nodeButtons = Array.from(document.querySelectorAll(".graphic-node-trigger"));
 
     const activate = (view) => {
       buttons.forEach((button) => {
@@ -159,6 +175,22 @@
       expandButton.addEventListener("click", () => {
         const expanded = timelineShell.classList.toggle("is-expanded");
         expandButton.textContent = expanded ? "Riduci vista" : "Amplia vista";
+      });
+    }
+
+    if (detailDate && detailYear && detailType && detailTitle && detailSummary) {
+      const updateDetail = (button) => {
+        detailDate.textContent = button.dataset.eventDate || "";
+        detailYear.textContent = button.dataset.eventYear || "";
+        detailType.textContent = button.dataset.eventType || "";
+        detailTitle.textContent = button.dataset.eventTitle || "";
+        detailSummary.textContent = button.dataset.eventSummary || "";
+      };
+
+      nodeButtons.forEach((button) => {
+        button.addEventListener("mouseenter", () => updateDetail(button));
+        button.addEventListener("focus", () => updateDetail(button));
+        button.addEventListener("click", () => updateDetail(button));
       });
     }
   })();
