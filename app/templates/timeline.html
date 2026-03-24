@@ -56,28 +56,41 @@
 </section>
 
 <section class="section timeline-panel" data-timeline-panel="grafica" hidden>
-  <div class="graphic-timeline-shell">
-    <div class="graphic-timeline-axis">
-      <span>{{ range_start }}</span>
-      <span>{{ range_end }}</span>
+  <div class="graphic-timeline-shell horizontal-timeline">
+    <div class="graphic-timeline-header">
+      <p class="eyebrow">Vista grafica</p>
+      <p class="hero-lead">Scorri orizzontalmente per seguire la cronologia lungo l'asse del tempo.</p>
     </div>
-    <div class="graphic-timeline-track">
-      {% for event in events %}
-        <article class="graphic-event-card">
-          <div class="graphic-event-marker">
-            <span class="graphic-event-dot"></span>
-            <span class="graphic-event-line"></span>
-          </div>
-          <div class="graphic-event-body">
-            <div class="timeline-meta-row">
-              <span class="timeline-date">{{ event.date_label }}</span>
-              <span class="graphic-year">{{ event.sort_year_label }}</span>
+    <div class="graphic-timeline-scroll">
+      <div class="graphic-timeline-canvas">
+        <div class="graphic-timeline-axis">
+          <span>{{ range_start }}</span>
+          <span>{{ range_end }}</span>
+        </div>
+        <div class="graphic-timeline-rail"></div>
+        {% for event in graphic_events %}
+          <article
+            class="graphic-node graphic-node-{{ event.graphic_row }}"
+            style="left: {{ event.graphic_position_pct }}%; --span: {{ event.graphic_span_pct }}%;"
+          >
+            <span class="graphic-node-dot"></span>
+            {% if event.is_span %}
+              <span class="graphic-node-span"></span>
+            {% endif %}
+            <div class="graphic-node-card">
+              <div class="timeline-meta-row">
+                <span class="timeline-date">{{ event.date_label }}</span>
+                <span class="graphic-year">{{ event.sort_year_label }}</span>
+              </div>
+              {% if event.event_type_label %}
+                <span class="tag">{{ event.event_type_label }}</span>
+              {% endif %}
+              <h3>{{ event.title }}</h3>
+              <p>{{ event.summary }}</p>
             </div>
-            <h3>{{ event.title }}</h3>
-            <p>{{ event.summary }}</p>
-          </div>
-        </article>
-      {% endfor %}
+          </article>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>

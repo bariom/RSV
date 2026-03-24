@@ -230,60 +230,125 @@ h3 { font-size: 1.8rem; }
 }
 
 .era-event-card,
-.graphic-event-card {
+.graphic-node-card {
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 252, 247, 0.82);
   padding: 1.2rem;
 }
 
-.graphic-timeline-shell {
-  overflow: hidden;
+.graphic-timeline-shell.horizontal-timeline {
+  padding: 1.5rem;
+}
+
+.graphic-timeline-header {
+  margin-bottom: 1rem;
+}
+
+.graphic-timeline-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.graphic-timeline-canvas {
+  position: relative;
+  min-width: 1400px;
+  height: 620px;
 }
 
 .graphic-timeline-axis {
+  position: absolute;
+  inset: 0 0 auto 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--muted);
   font-size: 0.95rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px dashed var(--line);
+  padding: 0 0.4rem;
 }
 
-.graphic-timeline-track {
-  display: grid;
-  gap: 1rem;
+.graphic-timeline-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(157, 77, 52, 0.4), rgba(50, 85, 71, 0.45));
+  transform: translateY(-50%);
 }
 
-.graphic-event-card {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  gap: 1rem;
-  align-items: start;
+.graphic-node {
+  position: absolute;
+  width: 280px;
+  transform: translateX(-50%);
 }
 
-.graphic-event-marker {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  min-height: 100%;
+.graphic-node-0 {
+  top: 3.5rem;
 }
 
-.graphic-event-dot {
-  width: 16px;
-  height: 16px;
+.graphic-node-1 {
+  top: 18.5rem;
+}
+
+.graphic-node-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--accent-dark), var(--accent));
   box-shadow: 0 0 0 6px rgba(157, 77, 52, 0.12);
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
-.graphic-event-line {
+.graphic-node-span {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 2px);
+  width: max(var(--span), 1.25%);
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(50, 85, 71, 0.45);
+  transform: translateY(-50%);
+}
+
+.graphic-node-card {
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+}
+
+.graphic-node-0 .graphic-node-card {
+  top: 0;
+}
+
+.graphic-node-0 .graphic-node-card::after,
+.graphic-node-1 .graphic-node-card::before {
+  content: "";
+  position: absolute;
+  left: 50%;
   width: 2px;
-  height: 100%;
-  min-height: 5rem;
   background: linear-gradient(180deg, rgba(157, 77, 52, 0.4), rgba(50, 85, 71, 0.22));
+  transform: translateX(-50%);
+}
+
+.graphic-node-0 .graphic-node-card::after {
+  top: 100%;
+  height: 5.8rem;
+}
+
+.graphic-node-1 .graphic-node-card {
+  bottom: 0;
+}
+
+.graphic-node-1 .graphic-node-card::before {
+  bottom: 100%;
+  height: 5.8rem;
 }
 
 .graphic-year {
@@ -457,7 +522,8 @@ h3 { font-size: 1.8rem; }
     flex: 1 1 0;
   }
 
-  .graphic-event-card {
-    grid-template-columns: 32px minmax(0, 1fr);
+  .graphic-timeline-canvas {
+    min-width: 1100px;
+    height: 660px;
   }
 }

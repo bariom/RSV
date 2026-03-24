@@ -194,11 +194,27 @@ def get_timeline_views() -> dict[str, Any]:
         min_year = 0
         max_year = 0
 
+    span_years = max(max_year - min_year, 1)
+    graphic_events: list[dict[str, Any]] = []
+    for index, event in enumerate(events):
+        position_pct = ((event["sort_year"] - min_year) / span_years) * 100
+        span_pct = max(((event["end_sort_year"] - event["sort_year"]) / span_years) * 100, 1.25 if event["is_span"] else 0)
+        graphic_events.append(
+            {
+                **event,
+                "graphic_position_pct": round(position_pct, 3),
+                "graphic_span_pct": round(span_pct, 3),
+                "graphic_row": index % 2,
+            }
+        )
+
     return {
         "events": events,
+        "graphic_events": graphic_events,
         "eras": eras,
         "range_start": _format_sort_year_label(min_year),
         "range_end": _format_sort_year_label(max_year),
+        "range_years": span_years,
     }
 
 
