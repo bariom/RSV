@@ -47,6 +47,7 @@ app.add_middleware(SessionMiddleware, secret_key=get_admin_config().secret_key)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 app.mount("/uploads", StaticFiles(directory=ensure_upload_root()), name="uploads")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+templates.env.globals["asset_version"] = int((BASE_DIR / "static" / "styles.css").stat().st_mtime)
 
 
 @app.get("/", response_class=HTMLResponse)

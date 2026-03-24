@@ -8,7 +8,7 @@
 </section>
 
 <section class="timeline-toolbar section">
-  <div class="timeline-switch" role="tablist" aria-label="Modalita timeline">
+  <div class="timeline-switch" role="tablist" aria-label="Modalità timeline">
     <button class="timeline-switch-button is-active" type="button" data-timeline-view="lista">Lista</button>
     <button class="timeline-switch-button" type="button" data-timeline-view="epoche">Per epoche</button>
     <button class="timeline-switch-button" type="button" data-timeline-view="grafica">Grafica</button>
@@ -63,6 +63,11 @@
     </div>
     <div class="graphic-timeline-scroll">
       <div class="graphic-timeline-canvas">
+        <div class="graphic-timeline-scale">
+          {% for era in eras %}
+            <span>{{ era.title }}</span>
+          {% endfor %}
+        </div>
         <div class="graphic-timeline-axis">
           <span>{{ range_start }}</span>
           <span>{{ range_end }}</span>

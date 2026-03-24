@@ -181,19 +181,27 @@ h3 { font-size: 1.8rem; }
 }
 
 .timeline-switch-button {
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
   background: transparent;
   color: var(--muted);
   font: inherit;
   font-weight: 700;
-  padding: 0.8rem 1rem;
+  padding: 0.9rem 1.15rem;
   border-radius: 999px;
   cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 
 .timeline-switch-button.is-active {
   background: linear-gradient(135deg, var(--accent-dark), var(--accent));
   color: #fff7ef;
+  box-shadow: 0 10px 24px rgba(111, 43, 31, 0.22);
+}
+
+.timeline-switch-button:hover {
+  transform: translateY(-1px);
 }
 
 .timeline-range {
@@ -252,8 +260,22 @@ h3 { font-size: 1.8rem; }
 
 .graphic-timeline-canvas {
   position: relative;
-  min-width: 1400px;
+  min-width: 1800px;
   height: 620px;
+}
+
+.graphic-timeline-scale {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2.8rem;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(160px, 1fr));
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
 .graphic-timeline-axis {
@@ -271,7 +293,7 @@ h3 { font-size: 1.8rem; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
+  top: 54%;
   height: 4px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(157, 77, 52, 0.4), rgba(50, 85, 71, 0.45));
@@ -285,17 +307,17 @@ h3 { font-size: 1.8rem; }
 }
 
 .graphic-node-0 {
-  top: 3.5rem;
+  top: 5.6rem;
 }
 
 .graphic-node-1 {
-  top: 18.5rem;
+  top: 21.5rem;
 }
 
 .graphic-node-dot {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 54%;
   width: 18px;
   height: 18px;
   border-radius: 999px;
@@ -308,7 +330,7 @@ h3 { font-size: 1.8rem; }
 .graphic-node-span {
   position: absolute;
   left: 50%;
-  top: calc(50% - 2px);
+  top: calc(54% - 2px);
   width: max(var(--span), 1.25%);
   height: 4px;
   border-radius: 999px;
@@ -523,7 +545,7 @@ h3 { font-size: 1.8rem; }
   }
 
   .graphic-timeline-canvas {
-    min-width: 1100px;
+    min-width: 1400px;
     height: 660px;
   }
 }
