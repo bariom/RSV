@@ -15,6 +15,20 @@
   <article class="panel admin-form-wrap">
     <p><strong>Fonti registrate:</strong> {{ sources_count }}</p>
   </article>
+  <article class="panel admin-form-wrap">
+    <p class="eyebrow">Homepage</p>
+    <form method="post" action="/admin/homepage-featured-place" class="admin-form">
+      <label>
+        <span>Luogo in evidenza</span>
+        <select name="place_slug" required>
+          {% for place in place_options %}
+            <option value="{{ place.slug }}" {% if featured_place_slug == place.slug %}selected{% endif %}>{{ place.title }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="button button-primary" type="submit">Salva luogo in evidenza</button>
+    </form>
+  </article>
   <div class="admin-actions"></div>
   <div class="stack-list">
     {% for entity in entities %}

@@ -259,6 +259,63 @@ def list_sources_admin() -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
 
 
+def list_places_admin() -> list[dict[str, Any]]:
+    if not has_database_config():
+        return []
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT
+                e.id::text AS id,
+                e.slug,
+                e.title
+            FROM entities e
+            JOIN places p ON p.entity_id = e.id
+            WHERE e.status = 'published'
+            ORDER BY e.sort_order, e.title
+            """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_featured_place_slug_admin() -> str:
+    if not has_database_config():
+        return ""
+    with get_connection() as connection:
+        row = connection.execute(
+            """
+            SELECT e.slug
+            FROM entities e
+            JOIN places p ON p.entity_id = e.id
+            WHERE COALESCE((e.metadata ->> 'homepage_featured')::boolean, FALSE) = TRUE
+            ORDER BY e.sort_order, e.title
+            LIMIT 1
+            """
+        ).fetchone()
+    return row["slug"] if row else ""
+
+
+def set_featured_place_admin(place_slug: str) -> None:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            UPDATE entities
+            SET metadata = metadata - 'homepage_featured'
+            WHERE entity_type = 'place'
+            """
+        )
+        connection.execute(
+            """
+            UPDATE entities
+            SET metadata = metadata || '{"homepage_featured": true}'::jsonb
+            WHERE slug = %s
+              AND entity_type = 'place'
+            """,
+            (place_slug,),
+        )
+        connection.commit()
+
+
 def get_entity_admin(entity_id: str) -> dict[str, Any] | None:
     if not has_database_config():
         return None

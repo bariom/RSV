@@ -21,13 +21,16 @@ from app.admin import (
     get_admin_choices,
     get_admin_config,
     get_entity_admin,
+    get_featured_place_slug_admin,
     get_source_admin,
     has_admin_password,
     list_entities_admin,
+    list_places_admin,
     list_sources_admin,
     remove_media_link_admin,
     remove_source_link_admin,
     save_media_upload_admin,
+    set_featured_place_admin,
     update_source_admin,
     update_entity_admin,
     verify_admin_password,
@@ -241,9 +244,20 @@ def admin_dashboard(request: Request) -> HTMLResponse | RedirectResponse:
             "request": request,
             "site_title": "Admin",
             "entities": list_entities_admin(),
+            "place_options": list_places_admin(),
+            "featured_place_slug": get_featured_place_slug_admin(),
             "sources_count": len(list_sources_admin()),
         },
     )
+
+
+@app.post("/admin/homepage-featured-place")
+async def admin_set_featured_place(request: Request, place_slug: str = Form(...)) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    set_featured_place_admin(place_slug)
+    return RedirectResponse("/admin", status_code=303)
 
 
 @app.get("/admin/entities/new", response_class=HTMLResponse, response_model=None)

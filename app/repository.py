@@ -437,7 +437,17 @@ def _get_homepage_context_from_db() -> dict[str, Any]:
                 CAST(p.place_type AS text) AS category
             FROM entities e
             JOIN places p ON p.entity_id = e.id
-            WHERE e.slug = 'battistero-di-san-giovanni'
+            WHERE e.slug = COALESCE(
+                (
+                    SELECT featured.slug
+                    FROM entities featured
+                    JOIN places featured_place ON featured_place.entity_id = featured.id
+                    WHERE COALESCE((featured.metadata ->> 'homepage_featured')::boolean, FALSE) = TRUE
+                    ORDER BY featured.sort_order, featured.title
+                    LIMIT 1
+                ),
+                'battistero-di-san-giovanni'
+            )
             """
         ).fetchone()
 
@@ -498,8 +508,8 @@ def _get_homepage_context_from_db() -> dict[str, Any]:
         "title": "Archivio Storico di Riva San Vitale",
         "tagline": "Storie, luoghi, persone e fonti del comune",
         "hero_title": "Riva San Vitale raccontata attraverso luoghi, eventi e fonti.",
-        "hero_lead": "Questa applicazione legge i dati direttamente dal database remoto quando DATABASE_URL e configurata.",
-        "featured_place_slug": "battistero-di-san-giovanni",
+        "hero_lead": "",
+        "featured_place_slug": featured_place["slug"] if featured_place else "battistero-di-san-giovanni",
     }
 
     return {
