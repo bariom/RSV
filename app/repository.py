@@ -258,6 +258,11 @@ def _enrich_timeline_event(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _attach_event_slugs(rows: list[dict[str, Any]], all_events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    event_slug_by_title = {event.get("title"): event.get("slug") for event in all_events}
+    return [{**row, "slug": row.get("slug") or event_slug_by_title.get(row.get("title"), "")} for row in rows]
+
+
 def get_timeline_views() -> dict[str, Any]:
     events = get_timeline()
     eras: list[dict[str, Any]] = []
@@ -396,13 +401,27 @@ def get_people() -> list[dict[str, Any]]:
 def get_place(slug: str) -> dict[str, Any] | None:
     if has_database_config():
         return _get_place_from_db(slug)
-    return next((place for place in load_site_data()["places"] if place["slug"] == slug), None)
+    data = load_site_data()
+    place = next((place for place in data["places"] if place["slug"] == slug), None)
+    if not place:
+        return None
+    return {**place, "events": _attach_event_slugs(place.get("events", []), data["events"])}
 
 
 def get_person(slug: str) -> dict[str, Any] | None:
     if has_database_config():
         return _get_person_from_db(slug)
-    return next((person for person in load_site_data()["people"] if person["slug"] == slug), None)
+    data = load_site_data()
+    person = next((person for person in data["people"] if person["slug"] == slug), None)
+    if not person:
+        return None
+    return {**person, "events": _attach_event_slugs(person.get("events", []), data["events"])}
+
+
+def get_event(slug: str) -> dict[str, Any] | None:
+    if has_database_config():
+        return _get_event_from_db(slug)
+    return _get_event_from_json(slug)
 
 
 def _get_homepage_context_from_db() -> dict[str, Any]:
@@ -570,6 +589,7 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
         events = connection.execute(
             """
             SELECT
+                event_entity.slug,
                 event_entity.title,
                 ev.date_label,
                 ev.start_date,
@@ -639,6 +659,7 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
         events = connection.execute(
             """
             SELECT
+                event_entity.slug,
                 event_entity.title,
                 ev.date_label,
                 ev.start_date,
@@ -685,6 +706,138 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
 
     result = dict(person)
     result["events"] = _sort_events([dict(row) for row in events])
+    result["media"] = [_resolve_media_url(dict(row)) for row in media]
+    result["sources"] = [dict(row) for row in sources]
+    return result
+
+
+def _get_event_from_json(slug: str) -> dict[str, Any] | None:
+    data = load_site_data()
+    base_event = next((event for event in data["events"] if event["slug"] == slug), None)
+    if not base_event:
+        return None
+
+    related_places: list[dict[str, Any]] = []
+    for place in data["places"]:
+        place_events = place.get("events", [])
+        if any(event.get("title") == base_event["title"] for event in place_events):
+            related_places.append(
+                {
+                    "slug": place["slug"],
+                    "title": place["title"],
+                    "summary": place["summary"],
+                }
+            )
+
+    related_people: list[dict[str, Any]] = []
+    for person in data["people"]:
+        person_events = person.get("events", [])
+        if any(event.get("title") == base_event["title"] for event in person_events):
+            related_people.append(
+                {
+                    "slug": person["slug"],
+                    "title": person["title"],
+                    "summary": person["summary"],
+                }
+            )
+
+    event = _enrich_timeline_event(dict(base_event))
+    event["description"] = base_event.get("description") or base_event.get("summary", "")
+    event["places"] = related_places
+    event["people"] = related_people
+    event["media"] = []
+    event["sources"] = []
+    return event
+
+
+def _get_event_from_db(slug: str) -> dict[str, Any] | None:
+    with get_connection() as connection:
+        event = connection.execute(
+            """
+            SELECT
+                e.slug,
+                e.title,
+                e.subtitle,
+                e.summary,
+                COALESCE(ev.narrative_md, e.description_md, e.summary) AS description,
+                ev.date_label,
+                ev.start_date,
+                ev.end_date,
+                CAST(ev.event_type AS text) AS event_type,
+                e.sort_order
+            FROM entities e
+            JOIN events ev ON ev.entity_id = e.id
+            WHERE e.slug = %s
+            """,
+            (slug,),
+        ).fetchone()
+        if not event:
+            return None
+
+        places = connection.execute(
+            """
+            SELECT
+                place_entity.slug,
+                place_entity.title,
+                place_entity.summary,
+                ep.role_label
+            FROM event_places ep
+            JOIN entities event_entity ON event_entity.id = ep.event_entity_id
+            JOIN entities place_entity ON place_entity.id = ep.place_entity_id
+            WHERE event_entity.slug = %s
+            ORDER BY place_entity.sort_order, place_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        people = connection.execute(
+            """
+            SELECT
+                participant_entity.slug,
+                participant_entity.title,
+                participant_entity.summary,
+                ep.role_label
+            FROM event_participants ep
+            JOIN entities event_entity ON event_entity.id = ep.event_entity_id
+            JOIN entities participant_entity ON participant_entity.id = ep.participant_entity_id
+            WHERE event_entity.slug = %s
+            ORDER BY participant_entity.sort_order, participant_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        media = connection.execute(
+            """
+            SELECT
+                media_entity.title,
+                COALESCE(em.caption_override, mi.caption, media_entity.summary) AS caption,
+                mi.file_path,
+                mi.source_url
+            FROM entity_media em
+            JOIN entities entity ON entity.id = em.entity_id
+            JOIN entities media_entity ON media_entity.id = em.media_entity_id
+            JOIN media_items mi ON mi.entity_id = em.media_entity_id
+            WHERE entity.slug = %s
+            ORDER BY em.sort_order, media_entity.title
+            """,
+            (slug,),
+        ).fetchall()
+
+        sources = connection.execute(
+            """
+            SELECT s.title, s.url
+            FROM entity_sources es
+            JOIN sources s ON s.id = es.source_id
+            JOIN entities e ON e.id = es.entity_id
+            WHERE e.slug = %s
+            ORDER BY s.title
+            """,
+            (slug,),
+        ).fetchall()
+
+    result = _enrich_timeline_event(dict(event))
+    result["places"] = [dict(row) for row in places]
+    result["people"] = [dict(row) for row in people]
     result["media"] = [_resolve_media_url(dict(row)) for row in media]
     result["sources"] = [dict(row) for row in sources]
     return result

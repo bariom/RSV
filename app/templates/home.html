@@ -47,7 +47,7 @@
     {% for event in events %}
       <article class="timeline-item">
         <span class="timeline-date">{{ event.date_label }}</span>
-        <h3>{{ event.title }}</h3>
+        <h3><a href="/eventi/{{ event.slug }}">{{ event.title }}</a></h3>
         <p>{{ event.summary }}</p>
       </article>
     {% endfor %}

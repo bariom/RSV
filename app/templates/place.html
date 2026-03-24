@@ -33,7 +33,7 @@
   <div class="stack-list">
     {% for event in place.events %}
       <div class="stack-item">
-        <h3>{{ event.title }}</h3>
+        <h3><a href="/eventi/{{ event.slug }}">{{ event.title }}</a></h3>
         <p><strong>{{ event.date_label }}</strong></p>
         <p>{{ event.summary }}</p>
       </div>

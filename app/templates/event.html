@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Evento</p>
+  <h1>{{ event.title }}</h1>
+  <p class="hero-lead">{{ event.subtitle or event.summary }}</p>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Scheda</p>
+    <p><strong>{{ event.date_label }}</strong></p>
+    {% if event.event_type_label %}
+      <p><span class="tag">{{ event.event_type_label }}</span></p>
+    {% endif %}
+    <p>{{ event.summary }}</p>
+    <p>{{ event.description }}</p>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Collegamenti</p>
+    <ul class="meta-list">
+      <li><strong>Luoghi:</strong> {{ event.places | length }}</li>
+      <li><strong>Persone:</strong> {{ event.people | length }}</li>
+      <li><strong>Fonti:</strong> {{ event.sources | length }}</li>
+      <li><strong>Media:</strong> {{ event.media | length }}</li>
+    </ul>
+  </article>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <div class="section-heading">
+      <p class="eyebrow">Luoghi collegati</p>
+      <h2>Dove si colloca l'evento</h2>
+    </div>
+    <div class="stack-list">
+      {% for place in event.places %}
+        <div class="stack-item">
+          <h3><a href="/luoghi/{{ place.slug }}">{{ place.title }}</a></h3>
+          {% if place.role_label %}
+            <p><strong>Ruolo:</strong> {{ place.role_label }}</p>
+          {% endif %}
+          <p>{{ place.summary }}</p>
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessun luogo collegato disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <div class="section-heading">
+      <p class="eyebrow">Persone collegate</p>
+      <h2>Protagonisti e partecipanti</h2>
+    </div>
+    <div class="stack-list">
+      {% for person in event.people %}
+        <div class="stack-item">
+          <h3><a href="/persone/{{ person.slug }}">{{ person.title }}</a></h3>
+          {% if person.role_label %}
+            <p><strong>Ruolo:</strong> {{ person.role_label }}</p>
+          {% endif %}
+          <p>{{ person.summary }}</p>
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessuna persona collegata disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Media</p>
+    <div class="stack-list">
+      {% for media in event.media %}
+        <div class="stack-item">
+          <h3>{{ media.title }}</h3>
+          {% if media.file_path %}
+            <div class="media-preview">
+              <img src="{{ media.url }}" alt="{{ media.caption or media.title }}">
+            </div>
+          {% endif %}
+          <p>{{ media.caption }}</p>
+          {% if media.url %}
+            <p><a href="{{ media.url }}" target="_blank" rel="noreferrer">Apri il media</a></p>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessun media collegato disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Fonti</p>
+    <div class="stack-list">
+      {% for source in event.sources %}
+        <div class="stack-item">
+          {% if source.url %}
+            <h3><a href="{{ source.url }}" target="_blank" rel="noreferrer">{{ source.title }}</a></h3>
+          {% else %}
+            <h3>{{ source.title if source.title else source }}</h3>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="stack-item">
+          <p>Nessuna fonte collegata disponibile.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -11,6 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.admin import (
     add_media_link_admin,
     add_source_link_admin,
+    create_linked_media_uploads_admin,
     create_entity_admin,
     create_source_admin,
     empty_entity_form,
@@ -30,6 +31,7 @@ from app.admin import (
     verify_admin_password,
 )
 from app.repository import (
+    get_event,
     get_homepage_context,
     get_people,
     get_person,
@@ -100,6 +102,17 @@ def person_page(request: Request, slug: str) -> HTMLResponse:
     return templates.TemplateResponse(
         "person.html",
         {"request": request, "person": person, "site_title": person["title"]},
+    )
+
+
+@app.get("/eventi/{slug}", response_class=HTMLResponse)
+def event_page(request: Request, slug: str) -> HTMLResponse:
+    event = get_event(slug)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento non trovato")
+    return templates.TemplateResponse(
+        "event.html",
+        {"request": request, "event": event, "site_title": event["title"]},
     )
 
 
@@ -368,6 +381,40 @@ async def admin_upload_media_file(
         return redirect
     content = await uploaded_file.read()
     save_media_upload_admin(entity_id, uploaded_file.filename or "", uploaded_file.content_type, content)
+    return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
+
+
+@app.post("/admin/entities/{entity_id}/media/bulk-upload")
+async def admin_bulk_upload_linked_media(
+    request: Request,
+    entity_id: str,
+    uploaded_files: list[UploadFile] = File(...),
+    usage_role: str = Form("gallery"),
+    credit_line: str = Form(""),
+    rights_statement: str = Form(""),
+    date_label: str = Form(""),
+) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    files_payload: list[dict[str, str | bytes | None]] = []
+    for uploaded_file in uploaded_files:
+        content = await uploaded_file.read()
+        files_payload.append(
+            {
+                "filename": uploaded_file.filename or "",
+                "content_type": uploaded_file.content_type,
+                "content": content,
+            }
+        )
+    create_linked_media_uploads_admin(
+        entity_id,
+        files_payload,
+        usage_role=usage_role,
+        credit_line=credit_line,
+        rights_statement=rights_statement,
+        date_label=date_label,
+    )
     return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
 
 

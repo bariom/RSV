@@ -26,7 +26,7 @@
             <span class="tag">{{ event.event_type_label }}</span>
           {% endif %}
         </div>
-        <h3>{{ event.title }}</h3>
+        <h3><a href="/eventi/{{ event.slug }}">{{ event.title }}</a></h3>
         <p>{{ event.summary }}</p>
       </article>
     {% endfor %}
@@ -45,7 +45,7 @@
           {% for event in era.events %}
             <article class="era-event-card">
               <span class="timeline-date">{{ event.date_label }}</span>
-              <h3>{{ event.title }}</h3>
+              <h3><a href="/eventi/{{ event.slug }}">{{ event.title }}</a></h3>
               <p>{{ event.summary }}</p>
             </article>
           {% endfor %}
@@ -78,8 +78,9 @@
           <span class="graphic-year" id="graphicDetailYear">{{ active_event.sort_year_label }}</span>
         </div>
         <span class="tag" id="graphicDetailType">{{ active_event.event_type_label }}</span>
-        <h3 id="graphicDetailTitle">{{ active_event.title }}</h3>
+        <h3><a id="graphicDetailTitle" href="/eventi/{{ active_event.slug }}">{{ active_event.title }}</a></h3>
         <p id="graphicDetailSummary">{{ active_event.summary }}</p>
+        <p><a id="graphicDetailLink" class="detail-link" href="/eventi/{{ active_event.slug }}">Apri scheda evento</a></p>
       </article>
     {% endif %}
     <div class="graphic-timeline-scroll">
@@ -119,6 +120,7 @@
               data-event-type="{{ event.event_type_label }}"
               data-event-title="{{ event.title }}"
               data-event-summary="{{ event.summary }}"
+              data-event-url="/eventi/{{ event.slug }}"
             >
               <span class="graphic-node-icon">{{ event.event_icon }}</span>
             </button>
@@ -143,6 +145,7 @@
     const detailType = document.getElementById("graphicDetailType");
     const detailTitle = document.getElementById("graphicDetailTitle");
     const detailSummary = document.getElementById("graphicDetailSummary");
+    const detailLink = document.getElementById("graphicDetailLink");
     const nodeButtons = Array.from(document.querySelectorAll(".graphic-node-trigger"));
 
     const activate = (view) => {
@@ -177,13 +180,15 @@
       });
     }
 
-    if (detailDate && detailYear && detailType && detailTitle && detailSummary) {
+    if (detailDate && detailYear && detailType && detailTitle && detailSummary && detailLink) {
       const updateDetail = (button) => {
         detailDate.textContent = button.dataset.eventDate || "";
         detailYear.textContent = button.dataset.eventYear || "";
         detailType.textContent = button.dataset.eventType || "";
         detailTitle.textContent = button.dataset.eventTitle || "";
+        detailTitle.href = button.dataset.eventUrl || "#";
         detailSummary.textContent = button.dataset.eventSummary || "";
+        detailLink.href = button.dataset.eventUrl || "#";
       };
 
       nodeButtons.forEach((button) => {

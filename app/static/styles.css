@@ -155,6 +155,20 @@ h3 { font-size: 1.8rem; }
 
 .timeline-item { padding-left: 1.5rem; }
 .timeline-date { color: var(--forest); display: inline-block; margin-bottom: 0.35rem; }
+.timeline-item a,
+.era-event-card a,
+.graphic-detail-card a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.timeline-item a:hover,
+.era-event-card a:hover,
+.graphic-detail-card a:hover,
+.detail-link:hover {
+  color: var(--accent-dark);
+}
+
 .timeline-meta-row {
   display: flex;
   align-items: center;
@@ -323,6 +337,12 @@ h3 { font-size: 1.8rem; }
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
   overflow: hidden;
+}
+
+.detail-link {
+  color: var(--accent-dark);
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .graphic-timeline-scroll {
