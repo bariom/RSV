@@ -184,5 +184,58 @@
     </form>
   </article>
 </section>
+
+<section class="section split-grid">
+  <article class="panel">
+    <p class="eyebrow">Fonti collegate</p>
+    <div class="stack-list">
+      {% for source in entity.source_links %}
+        <div class="stack-item">
+          <h3>{{ source.title }}</h3>
+          <p>{{ choices.source_link_role_labels.get(source.role, source.role) }}</p>
+          {% if source.url %}
+            <p><a href="{{ source.url }}" target="_blank" rel="noreferrer">{{ source.url }}</a></p>
+          {% endif %}
+          {% if source.page_locator %}
+            <p>Pagine: {{ source.page_locator }}</p>
+          {% endif %}
+          <form method="post" action="/admin/entities/{{ entity.id }}/sources/remove" class="admin-inline-form">
+            <input type="hidden" name="source_id" value="{{ source.source_id }}">
+            <input type="hidden" name="role" value="{{ source.role }}">
+            <button class="button button-secondary" type="submit">Rimuovi</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="stack-item"><p>Nessuna fonte collegata.</p></div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Aggiungi fonte</p>
+    <form method="post" action="/admin/entities/{{ entity.id }}/sources" class="admin-form">
+      <label>
+        <span>Fonte</span>
+        <select name="source_id" required>
+          <option value="">Seleziona una fonte</option>
+          {% for source in source_options %}
+            <option value="{{ source.id }}">{{ source.title }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Ruolo</span>
+        <select name="role">
+          {% for option in choices.source_link_roles %}
+            <option value="{{ option }}">{{ choices.source_link_role_labels.get(option, option) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label><span>Pagine / collocazione</span><input type="text" name="page_locator"></label>
+      <label><span>Note</span><textarea name="notes_md" rows="3"></textarea></label>
+      <p><a href="/admin/sources/new">Crea una nuova fonte</a></p>
+      <button class="button button-primary" type="submit">Collega fonte</button>
+    </form>
+  </article>
+</section>
 {% endif %}
 {% endblock %}

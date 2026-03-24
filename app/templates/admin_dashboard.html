@@ -10,7 +10,12 @@
 <section class="section">
   <div class="admin-actions">
     <a class="button button-primary" href="/admin/entities/new">Nuova entita</a>
+    <a class="button button-secondary" href="/admin/sources">Gestisci fonti</a>
   </div>
+  <article class="panel admin-form-wrap">
+    <p><strong>Fonti registrate:</strong> {{ sources_count }}</p>
+  </article>
+  <div class="admin-actions"></div>
   <div class="stack-list">
     {% for entity in entities %}
       <article class="stack-item admin-list-item">

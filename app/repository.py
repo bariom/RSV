@@ -26,6 +26,29 @@ PLACE_TYPE_LABELS = {
     "other": "altro",
 }
 
+EVENT_TYPE_LABELS = {
+    "political": "politica",
+    "religious": "religione",
+    "social": "società",
+    "economic": "economia",
+    "cultural": "cultura",
+    "military": "conflitto",
+    "architectural": "architettura",
+    "archaeological": "archeologia",
+    "administrative": "istituzioni",
+    "disaster": "evento critico",
+    "other": "altro",
+}
+
+TIMELINE_ERAS = (
+    ("preistoria", "Preistoria", -5000, -1, "Dalle prime frequentazioni del territorio fino all'età preromana."),
+    ("romana", "Età romana", 1, 499, "Riva come approdo, spazio di scambi e luogo di testimonianze epigrafiche."),
+    ("medievale", "Medioevo", 500, 1499, "Pieve, culto, paesaggio religioso e consolidamento del borgo."),
+    ("moderna", "Età moderna", 1500, 1799, "Cantieri monumentali, committenze e trasformazioni del centro storico."),
+    ("ottocento", "Ottocento e primo Novecento", 1800, 1945, "Cambiamenti politici, industriali e nuove letture del patrimonio."),
+    ("contemporanea", "Età contemporanea", 1946, 9999, "Restauri, musealizzazione e riconoscimenti internazionali."),
+)
+
 
 def _resolve_media_url(row: dict[str, Any]) -> dict[str, Any]:
     source_url = row.get("source_url") or ""
@@ -37,6 +60,12 @@ def _localize_place_type(value: str | None) -> str:
     if not value:
         return ""
     return PLACE_TYPE_LABELS.get(value, value.replace("_", " "))
+
+
+def _localize_event_type(value: str | None) -> str:
+    if not value:
+        return ""
+    return EVENT_TYPE_LABELS.get(value, value.replace("_", " "))
 
 
 def _normalize_roman_century(value: str) -> int | None:
@@ -62,6 +91,8 @@ def _infer_year_from_label(date_label: str | None) -> int:
 
     label = date_label.strip().lower()
     if "neolitic" in label:
+        return -4000
+    if "preistori" in label:
         return -4000
     if "epoca romana" in label:
         return 1
@@ -104,6 +135,73 @@ def _sort_events(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(rows, key=sort_key)
 
 
+def _format_sort_year_label(year: int) -> str:
+    if year < 0:
+        return f"{abs(year)} a.C."
+    if year == 0:
+        return "0"
+    return str(year)
+
+
+def _get_timeline_era(year: int) -> dict[str, str]:
+    for key, title, start, end, summary in TIMELINE_ERAS:
+        if start <= year <= end:
+            return {"key": key, "title": title, "summary": summary}
+    return {"key": "senza-periodo", "title": "Senza periodo", "summary": "Eventi non ancora collocati con sufficiente precisione."}
+
+
+def _enrich_timeline_event(row: dict[str, Any]) -> dict[str, Any]:
+    start_year = _extract_year(row.get("start_date"))
+    end_year = _extract_year(row.get("end_date"))
+    sort_year = start_year if start_year is not None else _infer_year_from_label(row.get("date_label"))
+    end_sort_year = end_year if end_year is not None else sort_year
+    era = _get_timeline_era(sort_year)
+    return {
+        **row,
+        "event_type_label": _localize_event_type(row.get("event_type")),
+        "sort_year": sort_year,
+        "sort_year_label": _format_sort_year_label(sort_year),
+        "end_sort_year": end_sort_year,
+        "is_span": end_sort_year != sort_year,
+        "era_key": era["key"],
+        "era_title": era["title"],
+        "era_summary": era["summary"],
+        "graphic_offset": max(sort_year + 4000, 0),
+        "graphic_width": max(end_sort_year - sort_year, 0),
+    }
+
+
+def get_timeline_views() -> dict[str, Any]:
+    events = get_timeline()
+    eras: list[dict[str, Any]] = []
+    for key, title, _start, _end, summary in TIMELINE_ERAS:
+        era_events = [event for event in events if event.get("era_key") == key]
+        if not era_events:
+            continue
+        eras.append(
+            {
+                "key": key,
+                "title": title,
+                "summary": summary,
+                "events": era_events,
+            }
+        )
+
+    if events:
+        min_year = min(event["sort_year"] for event in events)
+        max_year = max(event["end_sort_year"] for event in events)
+    else:
+        min_year = 0
+        max_year = 0
+
+    return {
+        "events": events,
+        "eras": eras,
+        "range_start": _format_sort_year_label(min_year),
+        "range_end": _format_sort_year_label(max_year),
+    }
+
+
 @lru_cache(maxsize=1)
 def load_site_data() -> dict[str, Any]:
     with DATA_PATH.open("r", encoding="utf-8") as handle:
@@ -131,7 +229,8 @@ def get_homepage_context() -> dict[str, Any]:
 def get_timeline() -> list[dict[str, Any]]:
     if has_database_config():
         return _get_timeline_from_db()
-    return _sort_events(load_site_data()["events"])
+    rows = _sort_events(load_site_data()["events"])
+    return [_enrich_timeline_event(row) for row in rows]
 
 
 def get_places() -> list[dict[str, Any]]:
@@ -299,6 +398,7 @@ def _get_timeline_from_db(connection: Any | None = None) -> list[dict[str, Any]]
                 ev.date_label,
                 ev.start_date,
                 ev.end_date,
+                CAST(ev.event_type AS text) AS event_type,
                 e.summary,
                 e.sort_order
             FROM events ev
@@ -306,7 +406,7 @@ def _get_timeline_from_db(connection: Any | None = None) -> list[dict[str, Any]]
             WHERE e.status = 'published'
             """
         ).fetchall()
-        return _sort_events([dict(row) for row in rows])
+        return [_enrich_timeline_event(row) for row in _sort_events([dict(row) for row in rows])]
     finally:
         if owns_connection:
             context.__exit__(None, None, None)

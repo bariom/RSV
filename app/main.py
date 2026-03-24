@@ -10,15 +10,22 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin import (
     add_media_link_admin,
+    add_source_link_admin,
     create_entity_admin,
+    create_source_admin,
     empty_entity_form,
+    empty_source_form,
     get_admin_choices,
     get_admin_config,
     get_entity_admin,
+    get_source_admin,
     has_admin_password,
     list_entities_admin,
+    list_sources_admin,
     remove_media_link_admin,
+    remove_source_link_admin,
     save_media_upload_admin,
+    update_source_admin,
     update_entity_admin,
     verify_admin_password,
 )
@@ -28,7 +35,7 @@ from app.repository import (
     get_person,
     get_place,
     get_places,
-    get_timeline,
+    get_timeline_views,
 )
 from app.storage import ensure_upload_root
 
@@ -50,9 +57,10 @@ def homepage(request: Request) -> HTMLResponse:
 
 @app.get("/timeline", response_class=HTMLResponse)
 def timeline_page(request: Request) -> HTMLResponse:
+    timeline = get_timeline_views()
     return templates.TemplateResponse(
         "timeline.html",
-        {"request": request, "events": get_timeline(), "site_title": "Timeline"},
+        {"request": request, "site_title": "Timeline", **timeline},
     )
 
 
@@ -152,6 +160,26 @@ def _admin_form_data(form_data: dict[str, str]) -> dict[str, object]:
     }
 
 
+def _source_form_data(form_data: dict[str, str]) -> dict[str, str]:
+    return {
+        "source_type": form_data.get("source_type", "website").strip() or "website",
+        "title": form_data.get("title", "").strip(),
+        "citation": form_data.get("citation", "").strip(),
+        "author_text": form_data.get("author_text", "").strip(),
+        "publisher": form_data.get("publisher", "").strip(),
+        "publication_place": form_data.get("publication_place", "").strip(),
+        "publication_year": form_data.get("publication_year", "").strip(),
+        "archive_name": form_data.get("archive_name", "").strip(),
+        "collection_name": form_data.get("collection_name", "").strip(),
+        "shelfmark": form_data.get("shelfmark", "").strip(),
+        "language_code": form_data.get("language_code", "it").strip() or "it",
+        "url": form_data.get("url", "").strip(),
+        "accessed_on": form_data.get("accessed_on", "").strip(),
+        "notes_md": form_data.get("notes_md", "").strip(),
+        "metadata": form_data.get("metadata", "{}").strip() or "{}",
+    }
+
+
 @app.get("/admin/login", response_class=HTMLResponse, response_model=None)
 def admin_login_page(request: Request) -> HTMLResponse | RedirectResponse:
     if request.session.get("admin_authenticated"):
@@ -193,7 +221,12 @@ def admin_dashboard(request: Request) -> HTMLResponse | RedirectResponse:
         return redirect
     return templates.TemplateResponse(
         "admin_dashboard.html",
-        {"request": request, "site_title": "Admin", "entities": list_entities_admin()},
+        {
+            "request": request,
+            "site_title": "Admin",
+            "entities": list_entities_admin(),
+            "sources_count": len(list_sources_admin()),
+        },
     )
 
 
@@ -258,6 +291,7 @@ def admin_entity_page(request: Request, entity_id: str) -> HTMLResponse | Redire
             "site_title": entity["title"],
             "entity": entity,
             "choices": get_admin_choices(),
+            "source_options": list_sources_admin(),
             "error": None,
             "is_new": False,
         },
@@ -283,6 +317,7 @@ async def admin_update_entity(request: Request, entity_id: str) -> HTMLResponse 
                 "site_title": entity.get("title", "Modifica entita"),
                 "entity": entity,
                 "choices": get_admin_choices(),
+                "source_options": list_sources_admin(),
                 "error": str(exc),
                 "is_new": False,
             },
@@ -332,4 +367,140 @@ async def admin_upload_media_file(
         return redirect
     content = await uploaded_file.read()
     save_media_upload_admin(entity_id, uploaded_file.filename or "", uploaded_file.content_type, content)
+    return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
+
+
+@app.get("/admin/sources", response_class=HTMLResponse, response_model=None)
+def admin_sources_page(request: Request) -> HTMLResponse | RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    return templates.TemplateResponse(
+        "admin_sources.html",
+        {
+            "request": request,
+            "site_title": "Fonti",
+            "sources": list_sources_admin(),
+            "choices": get_admin_choices(),
+        },
+    )
+
+
+@app.get("/admin/sources/new", response_class=HTMLResponse, response_model=None)
+def admin_new_source_page(request: Request) -> HTMLResponse | RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    return templates.TemplateResponse(
+        "admin_source_form.html",
+        {
+            "request": request,
+            "site_title": "Nuova fonte",
+            "source": empty_source_form(),
+            "choices": get_admin_choices(),
+            "error": None,
+            "is_new": True,
+        },
+    )
+
+
+@app.post("/admin/sources/new", response_class=HTMLResponse, response_model=None)
+async def admin_create_source(request: Request) -> HTMLResponse | RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    form = await request.form()
+    data = _source_form_data(dict(form))
+    try:
+        source_id = create_source_admin(data)
+    except Exception as exc:
+        return templates.TemplateResponse(
+            "admin_source_form.html",
+            {
+                "request": request,
+                "site_title": "Nuova fonte",
+                "source": data,
+                "choices": get_admin_choices(),
+                "error": str(exc),
+                "is_new": True,
+            },
+            status_code=400,
+        )
+    return RedirectResponse(f"/admin/sources/{source_id}", status_code=303)
+
+
+@app.get("/admin/sources/{source_id}", response_class=HTMLResponse, response_model=None)
+def admin_source_page(request: Request, source_id: str) -> HTMLResponse | RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    source = get_source_admin(source_id)
+    if not source:
+        raise HTTPException(status_code=404, detail="Fonte non trovata")
+    return templates.TemplateResponse(
+        "admin_source_form.html",
+        {
+            "request": request,
+            "site_title": source["title"],
+            "source": source,
+            "choices": get_admin_choices(),
+            "error": None,
+            "is_new": False,
+        },
+    )
+
+
+@app.post("/admin/sources/{source_id}", response_class=HTMLResponse, response_model=None)
+async def admin_update_source(request: Request, source_id: str) -> HTMLResponse | RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    form = await request.form()
+    data = _source_form_data(dict(form))
+    try:
+        update_source_admin(source_id, data)
+    except Exception as exc:
+        source = {**data, "id": source_id}
+        return templates.TemplateResponse(
+            "admin_source_form.html",
+            {
+                "request": request,
+                "site_title": source.get("title", "Modifica fonte"),
+                "source": source,
+                "choices": get_admin_choices(),
+                "error": str(exc),
+                "is_new": False,
+            },
+            status_code=400,
+        )
+    return RedirectResponse(f"/admin/sources/{source_id}", status_code=303)
+
+
+@app.post("/admin/entities/{entity_id}/sources")
+async def admin_add_source_link(
+    request: Request,
+    entity_id: str,
+    source_id: str = Form(...),
+    role: str = Form("secondary_evidence"),
+    page_locator: str = Form(""),
+    notes_md: str = Form(""),
+) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    add_source_link_admin(entity_id, source_id, role, page_locator, notes_md)
+    return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
+
+
+@app.post("/admin/entities/{entity_id}/sources/remove")
+async def admin_remove_source_link(
+    request: Request,
+    entity_id: str,
+    source_id: str = Form(...),
+    role: str = Form(...),
+) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    remove_source_link_admin(entity_id, source_id, role)
     return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)

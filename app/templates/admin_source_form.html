@@ -1,0 +1,44 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Admin</p>
+  <h1>{{ "Nuova fonte" if is_new else "Modifica fonte" }}</h1>
+  <p class="hero-lead">Compila i metadati bibliografici o archivistici e collega poi la fonte alle schede del sito.</p>
+</section>
+
+<section class="section">
+  {% if error %}
+    <p class="admin-error">{{ error }}</p>
+  {% endif %}
+  <article class="panel admin-form-wrap">
+    <form method="post" class="admin-form">
+      <div class="admin-grid">
+        <label>
+          <span>Tipo fonte</span>
+          <select name="source_type">
+            {% for option in choices.source_types %}
+              <option value="{{ option }}" {% if source.source_type == option %}selected{% endif %}>{{ choices.source_type_labels.get(option, option) }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label><span>Lingua</span><input type="text" name="language_code" value="{{ source.language_code }}"></label>
+        <label><span>Titolo</span><input type="text" name="title" value="{{ source.title }}" required></label>
+        <label><span>Autore</span><input type="text" name="author_text" value="{{ source.author_text }}"></label>
+        <label><span>Editore</span><input type="text" name="publisher" value="{{ source.publisher }}"></label>
+        <label><span>Luogo pubblicazione</span><input type="text" name="publication_place" value="{{ source.publication_place }}"></label>
+        <label><span>Anno</span><input type="number" name="publication_year" value="{{ source.publication_year }}"></label>
+        <label><span>Archivio</span><input type="text" name="archive_name" value="{{ source.archive_name }}"></label>
+        <label><span>Fondo/collezione</span><input type="text" name="collection_name" value="{{ source.collection_name }}"></label>
+        <label><span>Segnatura</span><input type="text" name="shelfmark" value="{{ source.shelfmark }}"></label>
+        <label><span>URL</span><input type="text" name="url" value="{{ source.url }}"></label>
+        <label><span>Data accesso</span><input type="date" name="accessed_on" value="{{ source.accessed_on }}"></label>
+      </div>
+      <label><span>Citazione</span><textarea name="citation" rows="3" required>{{ source.citation }}</textarea></label>
+      <label><span>Note</span><textarea name="notes_md" rows="4">{{ source.notes_md }}</textarea></label>
+      <label><span>Metadata JSON</span><textarea name="metadata" rows="4">{{ source.metadata }}</textarea></label>
+      <button class="button button-primary" type="submit">Salva fonte</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

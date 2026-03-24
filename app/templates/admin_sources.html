@@ -1,0 +1,34 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Admin</p>
+  <h1>Fonti</h1>
+  <p class="hero-lead">Bibliografia, siti, schede archivistiche e altre fonti documentarie collegate ai contenuti del sito.</p>
+</section>
+
+<section class="section">
+  <div class="admin-actions">
+    <a class="button button-primary" href="/admin/sources/new">Nuova fonte</a>
+  </div>
+  <div class="stack-list">
+    {% for source in sources %}
+      <article class="stack-item admin-list-item">
+        <div>
+          <span class="tag">{{ choices.source_type_labels.get(source.source_type, source.source_type) }}</span>
+          <h3><a href="/admin/sources/{{ source.id }}">{{ source.title }}</a></h3>
+          <p>{{ source.citation }}</p>
+          {% if source.url %}
+            <p><a href="{{ source.url }}" target="_blank" rel="noreferrer">{{ source.url }}</a></p>
+          {% endif %}
+        </div>
+        <a class="button button-secondary" href="/admin/sources/{{ source.id }}">Modifica</a>
+      </article>
+    {% else %}
+      <article class="stack-item">
+        <p>Nessuna fonte disponibile.</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

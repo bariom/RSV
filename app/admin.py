@@ -85,6 +85,46 @@ MEDIA_TYPES = [
     "model_3d",
     "other",
 ]
+SOURCE_TYPES = [
+    "archival_record",
+    "book",
+    "article",
+    "periodical",
+    "website",
+    "oral_history",
+    "map",
+    "photograph",
+    "registry",
+    "other",
+]
+SOURCE_TYPE_LABELS = {
+    "archival_record": "record archivistico",
+    "book": "libro",
+    "article": "articolo",
+    "periodical": "periodico",
+    "website": "sito web",
+    "oral_history": "fonte orale",
+    "map": "mappa",
+    "photograph": "fotografia",
+    "registry": "registro",
+    "other": "altro",
+}
+SOURCE_LINK_ROLES = [
+    "primary_evidence",
+    "secondary_evidence",
+    "bibliography",
+    "image_credit",
+    "transcription_source",
+    "further_reading",
+]
+SOURCE_LINK_ROLE_LABELS = {
+    "primary_evidence": "fonte primaria",
+    "secondary_evidence": "fonte secondaria",
+    "bibliography": "bibliografia",
+    "image_credit": "credito immagine",
+    "transcription_source": "fonte della trascrizione",
+    "further_reading": "approfondimento",
+}
 NARRATIVE_TYPES = [
     "article",
     "timeline_entry",
@@ -129,6 +169,10 @@ def get_admin_choices() -> dict[str, list[str]]:
         "event_types": EVENT_TYPES,
         "document_types": DOCUMENT_TYPES,
         "media_types": MEDIA_TYPES,
+        "source_types": SOURCE_TYPES,
+        "source_type_labels": SOURCE_TYPE_LABELS,
+        "source_link_roles": SOURCE_LINK_ROLES,
+        "source_link_role_labels": SOURCE_LINK_ROLE_LABELS,
         "narrative_types": NARRATIVE_TYPES,
     }
 
@@ -149,6 +193,28 @@ def empty_entity_form() -> dict[str, Any]:
         "metadata": "{}",
         "details": {},
         "media_links": [],
+        "source_links": [],
+    }
+
+
+def empty_source_form() -> dict[str, Any]:
+    return {
+        "id": "",
+        "source_type": "website",
+        "title": "",
+        "citation": "",
+        "author_text": "",
+        "publisher": "",
+        "publication_place": "",
+        "publication_year": "",
+        "archive_name": "",
+        "collection_name": "",
+        "shelfmark": "",
+        "language_code": "it",
+        "url": "",
+        "accessed_on": "",
+        "notes_md": "",
+        "metadata": "{}",
     }
 
 
@@ -166,6 +232,26 @@ def list_entities_admin() -> list[dict[str, Any]]:
                 status::text AS status,
                 updated_at
             FROM entities
+            ORDER BY updated_at DESC, title
+            """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def list_sources_admin() -> list[dict[str, Any]]:
+    if not has_database_config():
+        return []
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT
+                id::text AS id,
+                source_type::text AS source_type,
+                title,
+                citation,
+                url,
+                updated_at
+            FROM sources
             ORDER BY updated_at DESC, title
             """
         ).fetchall()
@@ -219,7 +305,198 @@ def get_entity_admin(entity_id: str) -> dict[str, Any] | None:
                 (entity_id,),
             ).fetchall()
         ]
+        result["source_links"] = [
+            dict(row)
+            for row in connection.execute(
+                """
+                SELECT
+                    s.id::text AS source_id,
+                    s.title,
+                    s.url,
+                    es.role::text AS role,
+                    es.page_locator,
+                    es.notes_md
+                FROM entity_sources es
+                JOIN sources s ON s.id = es.source_id
+                WHERE es.entity_id = %s::uuid
+                ORDER BY s.title, es.role
+                """,
+                (entity_id,),
+            ).fetchall()
+        ]
         return result
+
+
+def get_source_admin(source_id: str) -> dict[str, Any] | None:
+    if not has_database_config():
+        return None
+    with get_connection() as connection:
+        source = connection.execute(
+            """
+            SELECT
+                id::text AS id,
+                source_type::text AS source_type,
+                title,
+                citation,
+                author_text,
+                publisher,
+                publication_place,
+                publication_year,
+                archive_name,
+                collection_name,
+                shelfmark,
+                language_code,
+                url,
+                accessed_on::text AS accessed_on,
+                notes_md,
+                metadata::text AS metadata
+            FROM sources
+            WHERE id = %s::uuid
+            """,
+            (source_id,),
+        ).fetchone()
+    return dict(source) if source else None
+
+
+def create_source_admin(data: dict[str, Any]) -> str:
+    with get_connection() as connection:
+        source_id = connection.execute(
+            """
+            INSERT INTO sources (
+                source_type,
+                title,
+                citation,
+                author_text,
+                publisher,
+                publication_place,
+                publication_year,
+                archive_name,
+                collection_name,
+                shelfmark,
+                language_code,
+                url,
+                accessed_on,
+                notes_md,
+                metadata
+            ) VALUES (
+                %s::source_type,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s::date,
+                %s,
+                %s::jsonb
+            )
+            RETURNING id::text
+            """,
+            (
+                data["source_type"],
+                data["title"],
+                data["citation"],
+                data.get("author_text") or None,
+                data.get("publisher") or None,
+                data.get("publication_place") or None,
+                int(data["publication_year"]) if data.get("publication_year") else None,
+                data.get("archive_name") or None,
+                data.get("collection_name") or None,
+                data.get("shelfmark") or None,
+                data.get("language_code") or None,
+                data.get("url") or None,
+                data.get("accessed_on") or None,
+                data.get("notes_md") or None,
+                data.get("metadata") or "{}",
+            ),
+        ).fetchone()["id"]
+        connection.commit()
+        return source_id
+
+
+def update_source_admin(source_id: str, data: dict[str, Any]) -> None:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            UPDATE sources
+            SET
+                source_type = %s::source_type,
+                title = %s,
+                citation = %s,
+                author_text = %s,
+                publisher = %s,
+                publication_place = %s,
+                publication_year = %s,
+                archive_name = %s,
+                collection_name = %s,
+                shelfmark = %s,
+                language_code = %s,
+                url = %s,
+                accessed_on = %s::date,
+                notes_md = %s,
+                metadata = %s::jsonb
+            WHERE id = %s::uuid
+            """,
+            (
+                data["source_type"],
+                data["title"],
+                data["citation"],
+                data.get("author_text") or None,
+                data.get("publisher") or None,
+                data.get("publication_place") or None,
+                int(data["publication_year"]) if data.get("publication_year") else None,
+                data.get("archive_name") or None,
+                data.get("collection_name") or None,
+                data.get("shelfmark") or None,
+                data.get("language_code") or None,
+                data.get("url") or None,
+                data.get("accessed_on") or None,
+                data.get("notes_md") or None,
+                data.get("metadata") or "{}",
+                source_id,
+            ),
+        )
+        connection.commit()
+
+
+def add_source_link_admin(entity_id: str, source_id: str, role: str, page_locator: str, notes_md: str) -> None:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            INSERT INTO entity_sources (
+                entity_id,
+                source_id,
+                role,
+                page_locator,
+                notes_md
+            ) VALUES (%s::uuid, %s::uuid, %s::source_link_role, %s, %s)
+            ON CONFLICT (entity_id, source_id, role)
+            DO UPDATE SET
+                page_locator = EXCLUDED.page_locator,
+                notes_md = EXCLUDED.notes_md
+            """,
+            (entity_id, source_id, role, page_locator or None, notes_md or None),
+        )
+        connection.commit()
+
+
+def remove_source_link_admin(entity_id: str, source_id: str, role: str) -> None:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            DELETE FROM entity_sources
+            WHERE entity_id = %s::uuid
+              AND source_id = %s::uuid
+              AND role = %s::source_link_role
+            """,
+            (entity_id, source_id, role),
+        )
+        connection.commit()
 
 
 def create_entity_admin(data: dict[str, Any]) -> str:

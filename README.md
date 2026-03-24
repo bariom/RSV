@@ -90,6 +90,8 @@ Funzioni attuali:
 - login protetto da password;
 - elenco entita presenti nel DB;
 - creazione e modifica di entita principali;
+- creazione e modifica delle fonti in `/admin/sources`;
+- collegamento delle fonti alle entita direttamente dal backoffice;
 - gestione dettagli base per `place`, `person`, `event`, `document`, `media`, `narrative`, `organization`, `theme`;
 - collegamento manuale di media a una scheda tramite slug;
 - upload immagini su filesystem con path salvato nel DB.

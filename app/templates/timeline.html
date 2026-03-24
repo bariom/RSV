@@ -4,18 +4,103 @@
 <section class="page-intro">
   <p class="eyebrow">Timeline</p>
   <h1>Linea del tempo di Riva San Vitale</h1>
-  <p class="hero-lead">Una prima pagina dedicata agli eventi principali gia presenti nel modello dati.</p>
+  <p class="hero-lead">Una sola cronologia, tre modi diversi per leggerla: elenco, epoche e asse grafico orizzontale.</p>
 </section>
 
-<section class="section">
+<section class="timeline-toolbar section">
+  <div class="timeline-switch" role="tablist" aria-label="Modalita timeline">
+    <button class="timeline-switch-button is-active" type="button" data-timeline-view="lista">Lista</button>
+    <button class="timeline-switch-button" type="button" data-timeline-view="epoche">Per epoche</button>
+    <button class="timeline-switch-button" type="button" data-timeline-view="grafica">Grafica</button>
+  </div>
+  <p class="timeline-range">Arco cronologico rappresentato: <strong>{{ range_start }}</strong> → <strong>{{ range_end }}</strong></p>
+</section>
+
+<section class="section timeline-panel is-active" data-timeline-panel="lista">
   <div class="timeline">
     {% for event in events %}
       <article class="timeline-item">
-        <span class="timeline-date">{{ event.date_label }}</span>
+        <div class="timeline-meta-row">
+          <span class="timeline-date">{{ event.date_label }}</span>
+          {% if event.event_type_label %}
+            <span class="tag">{{ event.event_type_label }}</span>
+          {% endif %}
+        </div>
         <h3>{{ event.title }}</h3>
         <p>{{ event.summary }}</p>
       </article>
     {% endfor %}
   </div>
 </section>
+
+<section class="section timeline-panel" data-timeline-panel="epoche" hidden>
+  <div class="era-stack">
+    {% for era in eras %}
+      <article class="era-block">
+        <div class="era-header">
+          <p class="eyebrow">{{ era.title }}</p>
+          <p class="hero-lead">{{ era.summary }}</p>
+        </div>
+        <div class="era-events">
+          {% for event in era.events %}
+            <article class="era-event-card">
+              <span class="timeline-date">{{ event.date_label }}</span>
+              <h3>{{ event.title }}</h3>
+              <p>{{ event.summary }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section timeline-panel" data-timeline-panel="grafica" hidden>
+  <div class="graphic-timeline-shell">
+    <div class="graphic-timeline-axis">
+      <span>{{ range_start }}</span>
+      <span>{{ range_end }}</span>
+    </div>
+    <div class="graphic-timeline-track">
+      {% for event in events %}
+        <article class="graphic-event-card">
+          <div class="graphic-event-marker">
+            <span class="graphic-event-dot"></span>
+            <span class="graphic-event-line"></span>
+          </div>
+          <div class="graphic-event-body">
+            <div class="timeline-meta-row">
+              <span class="timeline-date">{{ event.date_label }}</span>
+              <span class="graphic-year">{{ event.sort_year_label }}</span>
+            </div>
+            <h3>{{ event.title }}</h3>
+            <p>{{ event.summary }}</p>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const buttons = Array.from(document.querySelectorAll("[data-timeline-view]"));
+    const panels = Array.from(document.querySelectorAll("[data-timeline-panel]"));
+
+    const activate = (view) => {
+      buttons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.timelineView === view);
+      });
+      panels.forEach((panel) => {
+        const active = panel.dataset.timelinePanel === view;
+        panel.classList.toggle("is-active", active);
+        panel.hidden = !active;
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => activate(button.dataset.timelineView));
+    });
+  })();
+</script>
 {% endblock %}
