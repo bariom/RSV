@@ -167,16 +167,20 @@ def _format_sort_year_label(year: int) -> str:
 
 def _build_timeline_ticks(min_year: int, max_year: int, count: int = 9) -> list[dict[str, Any]]:
     span_years = max(max_year - min_year, 1)
-    if span_years <= 80:
+    if span_years <= 40:
+        step = 5
+    elif span_years <= 120:
         step = 10
-    elif span_years <= 160:
+    elif span_years <= 240:
         step = 20
-    elif span_years <= 320:
+    elif span_years <= 500:
         step = 25
-    elif span_years <= 800:
+    elif span_years <= 900:
         step = 50
     elif span_years <= 1600:
         step = 100
+    elif span_years <= 2600:
+        step = 200
     else:
         step = 250
 
