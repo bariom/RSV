@@ -37,7 +37,12 @@
       <label><span>Citazione</span><textarea name="citation" rows="3" required>{{ source.citation }}</textarea></label>
       <label><span>Note</span><textarea name="notes_md" rows="4">{{ source.notes_md }}</textarea></label>
       <label><span>Metadata JSON</span><textarea name="metadata" rows="4">{{ source.metadata }}</textarea></label>
-      <button class="button button-primary" type="submit">Salva fonte</button>
+      <div class="admin-form-actions">
+        <button class="button button-primary" type="submit">Salva fonte</button>
+        {% if not is_new %}
+          <button class="button button-danger" type="submit" formaction="/admin/sources/{{ source.id }}/delete" formmethod="post" onclick="return confirm('Eliminare definitivamente questa fonte?');">Elimina fonte</button>
+        {% endif %}
+      </div>
     </form>
   </article>
 </section>

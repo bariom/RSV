@@ -576,7 +576,7 @@ def _get_place_from_db(slug: str) -> dict[str, Any] | None:
 
         sources = connection.execute(
             """
-            SELECT s.title, s.url
+            SELECT DISTINCT s.title, s.url
             FROM entity_sources es
             JOIN sources s ON s.id = es.source_id
             JOIN entities e ON e.id = es.entity_id
@@ -694,7 +694,7 @@ def _get_person_from_db(slug: str) -> dict[str, Any] | None:
 
         sources = connection.execute(
             """
-            SELECT s.title, s.url
+            SELECT DISTINCT s.title, s.url
             FROM entity_sources es
             JOIN sources s ON s.id = es.source_id
             JOIN entities e ON e.id = es.entity_id
@@ -825,7 +825,7 @@ def _get_event_from_db(slug: str) -> dict[str, Any] | None:
 
         sources = connection.execute(
             """
-            SELECT s.title, s.url
+            SELECT DISTINCT s.title, s.url
             FROM entity_sources es
             JOIN sources s ON s.id = es.source_id
             JOIN entities e ON e.id = es.entity_id

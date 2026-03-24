@@ -131,7 +131,12 @@
           </div>
         </div>
       {% endif %}
-      <button class="button button-primary" type="submit">Salva</button>
+      <div class="admin-form-actions">
+        <button class="button button-primary" type="submit">Salva</button>
+        {% if not is_new %}
+          <button class="button button-danger" type="submit" formaction="/admin/entities/{{ entity.id }}/delete" formmethod="post" onclick="return confirm('Eliminare definitivamente questa entita e tutti i collegamenti associati?');">Elimina entita</button>
+        {% endif %}
+      </div>
     </form>
   </article>
 </section>

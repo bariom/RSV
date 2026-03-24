@@ -24,7 +24,12 @@
           <h3><a href="/admin/entities/{{ entity.id }}">{{ entity.title }}</a></h3>
           <p><code>{{ entity.slug }}</code> / {{ entity.status }}</p>
         </div>
-        <a class="button button-secondary" href="/admin/entities/{{ entity.id }}">Modifica</a>
+        <div class="admin-row-actions">
+          <a class="button button-secondary" href="/admin/entities/{{ entity.id }}">Modifica</a>
+          <form method="post" action="/admin/entities/{{ entity.id }}/delete" onsubmit="return confirm('Eliminare definitivamente questa entita?');">
+            <button class="button button-danger" type="submit">Elimina</button>
+          </form>
+        </div>
       </article>
     {% else %}
       <article class="stack-item">

@@ -465,6 +465,18 @@ def update_source_admin(source_id: str, data: dict[str, Any]) -> None:
         connection.commit()
 
 
+def delete_source_admin(source_id: str) -> None:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            DELETE FROM sources
+            WHERE id = %s::uuid
+            """,
+            (source_id,),
+        )
+        connection.commit()
+
+
 def add_source_link_admin(entity_id: str, source_id: str, role: str, page_locator: str, notes_md: str) -> None:
     with get_connection() as connection:
         connection.execute(
@@ -585,6 +597,34 @@ def update_entity_admin(entity_id: str, data: dict[str, Any]) -> None:
         )
         _save_entity_details(connection, entity_id, data["entity_type"], data)
         connection.commit()
+
+
+def delete_entity_admin(entity_id: str) -> None:
+    with get_connection() as connection:
+        media_path_row = connection.execute(
+            """
+            SELECT mi.file_path
+            FROM entities e
+            LEFT JOIN media_items mi ON mi.entity_id = e.id
+            WHERE e.id = %s::uuid
+            """,
+            (entity_id,),
+        ).fetchone()
+
+        connection.execute(
+            """
+            DELETE FROM entities
+            WHERE id = %s::uuid
+            """,
+            (entity_id,),
+        )
+        connection.commit()
+
+    file_path = media_path_row["file_path"] if media_path_row and media_path_row.get("file_path") else None
+    if file_path:
+        file_on_disk = get_admin_config().upload_dir / file_path
+        if file_on_disk.exists():
+            file_on_disk.unlink()
 
 
 def add_media_link_admin(entity_id: str, media_slug: str, usage_role: str, caption_override: str, sort_order: int) -> None:

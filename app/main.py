@@ -14,6 +14,8 @@ from app.admin import (
     create_linked_media_uploads_admin,
     create_entity_admin,
     create_source_admin,
+    delete_entity_admin,
+    delete_source_admin,
     empty_entity_form,
     empty_source_form,
     get_admin_choices,
@@ -340,6 +342,15 @@ async def admin_update_entity(request: Request, entity_id: str) -> HTMLResponse 
     return RedirectResponse(f"/admin/entities/{entity_id}", status_code=303)
 
 
+@app.post("/admin/entities/{entity_id}/delete")
+async def admin_delete_entity(request: Request, entity_id: str) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    delete_entity_admin(entity_id)
+    return RedirectResponse("/admin", status_code=303)
+
+
 @app.post("/admin/entities/{entity_id}/media")
 async def admin_add_media_link(
     request: Request,
@@ -522,6 +533,15 @@ async def admin_update_source(request: Request, source_id: str) -> HTMLResponse 
             status_code=400,
         )
     return RedirectResponse(f"/admin/sources/{source_id}", status_code=303)
+
+
+@app.post("/admin/sources/{source_id}/delete")
+async def admin_delete_source(request: Request, source_id: str) -> RedirectResponse:
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    delete_source_admin(source_id)
+    return RedirectResponse("/admin/sources", status_code=303)
 
 
 @app.post("/admin/entities/{entity_id}/sources")
