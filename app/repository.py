@@ -163,6 +163,22 @@ def _format_sort_year_label(year: int) -> str:
     return str(year)
 
 
+def _build_timeline_ticks(min_year: int, max_year: int, count: int = 9) -> list[dict[str, Any]]:
+    span_years = max(max_year - min_year, 1)
+    ticks: list[dict[str, Any]] = []
+    for index in range(count):
+        ratio = index / (count - 1) if count > 1 else 0
+        year = round(min_year + (span_years * ratio))
+        ticks.append(
+            {
+                "year": year,
+                "label": _format_sort_year_label(year),
+                "position_pct": round(ratio * 100, 3),
+            }
+        )
+    return ticks
+
+
 def _get_timeline_era(year: int) -> dict[str, str]:
     for key, title, start, end, summary in TIMELINE_ERAS:
         if start <= year <= end:
@@ -237,6 +253,7 @@ def get_timeline_views() -> dict[str, Any]:
     return {
         "events": events,
         "graphic_events": graphic_events,
+        "graphic_ticks": _build_timeline_ticks(min_year, max_year),
         "eras": eras,
         "range_start": _format_sort_year_label(min_year),
         "range_end": _format_sort_year_label(max_year),

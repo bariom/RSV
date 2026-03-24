@@ -56,30 +56,41 @@
 </section>
 
 <section class="section timeline-panel" data-timeline-panel="grafica" hidden>
-  <div class="graphic-timeline-shell horizontal-timeline">
+  <div class="graphic-timeline-shell horizontal-timeline" id="graphicTimelineShell">
     <div class="graphic-timeline-header">
       <div>
         <p class="eyebrow">Vista grafica</p>
-        <p class="hero-lead">Usa lo zoom e scorri orizzontalmente. Le milestone si espandono al passaggio del mouse.</p>
+        <p class="hero-lead">Usa lo zoom, scorri orizzontalmente e amplia la sezione per una lettura più comoda. Le milestone si espandono al passaggio del mouse.</p>
       </div>
-      <label class="timeline-zoom-control">
-        <span>Zoom</span>
-        <input id="timelineZoom" type="range" min="1" max="2.4" step="0.1" value="1.3">
-        <output id="timelineZoomValue">130%</output>
-      </label>
+      <div class="graphic-timeline-actions">
+        <label class="timeline-zoom-control">
+          <span>Zoom</span>
+          <input id="timelineZoom" type="range" min="1" max="2.6" step="0.1" value="1.5">
+          <output id="timelineZoomValue">150%</output>
+        </label>
+        <button id="timelineExpandButton" class="button button-secondary timeline-expand-button" type="button">Amplia vista</button>
+      </div>
     </div>
     <div class="graphic-timeline-scroll">
-      <div class="graphic-timeline-canvas" style="--timeline-base-width: {{ graphic_base_width }}px; --timeline-zoom: 1.3;">
+      <div class="graphic-timeline-canvas" style="--timeline-base-width: {{ graphic_base_width }}px; --timeline-zoom: 1.5;">
         <div class="graphic-timeline-scale">
           {% for era in eras %}
             <span>{{ era.title }}</span>
           {% endfor %}
         </div>
         <div class="graphic-timeline-axis">
-          <span>{{ range_start }}</span>
-          <span>{{ range_end }}</span>
+          {% for tick in graphic_ticks %}
+            <span class="graphic-axis-label" style="left: {{ tick.position_pct }}%;">{{ tick.label }}</span>
+          {% endfor %}
         </div>
         <div class="graphic-timeline-rail"></div>
+        <div class="graphic-timeline-ticks">
+          {% for tick in graphic_ticks %}
+            <span class="graphic-tick" style="left: {{ tick.position_pct }}%;">
+              <span class="graphic-tick-line"></span>
+            </span>
+          {% endfor %}
+        </div>
         {% for event in graphic_events %}
           <article
             class="graphic-node graphic-lane-{{ event.graphic_lane }}"
@@ -116,6 +127,8 @@
     const zoomInput = document.getElementById("timelineZoom");
     const zoomValue = document.getElementById("timelineZoomValue");
     const canvas = document.querySelector(".graphic-timeline-canvas");
+    const timelineShell = document.getElementById("graphicTimelineShell");
+    const expandButton = document.getElementById("timelineExpandButton");
 
     const activate = (view) => {
       buttons.forEach((button) => {
@@ -140,6 +153,13 @@
       };
       zoomInput.addEventListener("input", applyZoom);
       applyZoom();
+    }
+
+    if (timelineShell && expandButton) {
+      expandButton.addEventListener("click", () => {
+        const expanded = timelineShell.classList.toggle("is-expanded");
+        expandButton.textContent = expanded ? "Riduci vista" : "Amplia vista";
+      });
     }
   })();
 </script>
