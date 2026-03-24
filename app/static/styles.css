@@ -294,7 +294,7 @@ h3 { font-size: 1.8rem; }
 
 .graphic-timeline-scroll {
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   padding-bottom: 0.75rem;
 }
 
@@ -302,7 +302,7 @@ h3 { font-size: 1.8rem; }
   position: relative;
   width: calc(var(--timeline-base-width) * var(--timeline-zoom, 1));
   min-width: calc(var(--timeline-base-width) * var(--timeline-zoom, 1));
-  height: 540px;
+  min-height: 720px;
 }
 
 .graphic-timeline-scale {
@@ -342,7 +342,7 @@ h3 { font-size: 1.8rem; }
 
 .graphic-tick {
   position: absolute;
-  top: 55%;
+  top: 44%;
   transform: translate(-50%, -50%);
 }
 
@@ -358,7 +358,7 @@ h3 { font-size: 1.8rem; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 55%;
+  top: 44%;
   height: 5px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(157, 77, 52, 0.4), rgba(50, 85, 71, 0.45));
@@ -367,7 +367,7 @@ h3 { font-size: 1.8rem; }
 
 .graphic-node {
   position: absolute;
-  top: 55%;
+  top: 44%;
   transform: translate(-50%, -50%);
 }
 
@@ -657,6 +657,6 @@ h3 { font-size: 1.8rem; }
   }
 
   .graphic-timeline-canvas {
-    height: 520px;
+    min-height: 760px;
   }
 }
