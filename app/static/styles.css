@@ -333,17 +333,23 @@ h3 { font-size: 1.8rem; }
 .graphic-timeline-axis {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 2rem;
+  height: 2.6rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   padding: 0;
 }
 
 .graphic-axis-label {
   position: absolute;
-  top: 0;
+  top: calc(var(--label-row, 0) * 0.9rem);
   transform: translateX(-50%);
   white-space: nowrap;
+  opacity: 0.72;
+}
+
+.graphic-axis-label.is-major {
+  opacity: 1;
+  font-weight: 600;
 }
 
 .graphic-timeline-ticks {
@@ -360,9 +366,14 @@ h3 { font-size: 1.8rem; }
 .graphic-tick-line {
   display: block;
   width: 1px;
-  height: 12px;
+  height: 10px;
   background: rgba(36, 25, 20, 0.18);
   transform: translateY(-8px);
+}
+
+.graphic-tick.is-major .graphic-tick-line {
+  height: 14px;
+  background: rgba(36, 25, 20, 0.3);
 }
 
 .graphic-timeline-rail {

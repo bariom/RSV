@@ -166,61 +166,63 @@ def _format_sort_year_label(year: int) -> str:
 
 
 def _build_timeline_ticks(min_year: int, max_year: int, count: int = 9) -> list[dict[str, Any]]:
+    del count
     span_years = max(max_year - min_year, 1)
     if span_years <= 40:
-        step = 5
+        base_step = 5
     elif span_years <= 120:
-        step = 10
+        base_step = 10
     elif span_years <= 240:
-        step = 20
+        base_step = 20
     elif span_years <= 500:
-        step = 25
+        base_step = 25
     elif span_years <= 900:
-        step = 50
+        base_step = 50
     elif span_years <= 1600:
-        step = 100
+        base_step = 100
     elif span_years <= 2600:
-        step = 200
+        base_step = 200
     else:
-        step = 250
+        base_step = 250
 
-    first_tick = ((min_year + step - 1) // step) * step
-    ticks: list[dict[str, Any]] = [
-        {
-            "year": min_year,
-            "label": _format_sort_year_label(min_year),
-            "position_pct": 0.0,
-        }
-    ]
+    tick_years: set[int] = {min_year, max_year}
 
+    first_tick = ((min_year + base_step - 1) // base_step) * base_step
     year = first_tick
     while year < max_year:
-        ratio = (year - min_year) / span_years
+        tick_years.add(year)
+        year += base_step
+
+    if max_year >= 1750:
+        modern_start = max(min_year, 1750)
+        modern_step = 25 if span_years <= 900 else 50
+        first_modern_tick = ((modern_start + modern_step - 1) // modern_step) * modern_step
+        year = first_modern_tick
+        while year < max_year:
+            tick_years.add(year)
+            year += modern_step
+
+    ticks: list[dict[str, Any]] = []
+    label_row = 0
+    for year in sorted(tick_years):
+        if year >= 1750:
+            is_major = year % 50 == 0 or year in {min_year, max_year}
+        elif year <= 0:
+            is_major = year % 100 == 0
+        else:
+            is_major = year % (base_step * 2) == 0 or year in {min_year, max_year}
         ticks.append(
             {
                 "year": year,
                 "label": _format_sort_year_label(year),
-                "position_pct": round(ratio * 100, 3),
+                "position_pct": round(((year - min_year) / span_years) * 100, 3),
+                "is_major": is_major,
+                "label_row": label_row,
             }
         )
-        year += step
+        label_row = 1 - label_row
 
-    ticks.append(
-        {
-            "year": max_year,
-            "label": _format_sort_year_label(max_year),
-            "position_pct": 100.0,
-        }
-    )
-
-    deduped: list[dict[str, Any]] = []
-    seen: set[int] = set()
-    for tick in ticks:
-        if tick["year"] in seen:
-            continue
-        deduped.append(tick)
-        seen.add(tick["year"])
-    return deduped
+    return ticks
 
 
 def _get_timeline_era(year: int) -> dict[str, str]:

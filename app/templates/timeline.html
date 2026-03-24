@@ -92,13 +92,13 @@
         </div>
         <div class="graphic-timeline-axis">
           {% for tick in graphic_ticks %}
-            <span class="graphic-axis-label" style="left: {{ tick.position_pct }}%;">{{ tick.label }}</span>
+            <span class="graphic-axis-label{% if tick.is_major %} is-major{% endif %}" style="left: {{ tick.position_pct }}%; --label-row: {{ tick.label_row }};">{{ tick.label }}</span>
           {% endfor %}
         </div>
         <div class="graphic-timeline-rail"></div>
         <div class="graphic-timeline-ticks">
           {% for tick in graphic_ticks %}
-            <span class="graphic-tick" style="left: {{ tick.position_pct }}%;">
+            <span class="graphic-tick{% if tick.is_major %} is-major{% endif %}" style="left: {{ tick.position_pct }}%;">
               <span class="graphic-tick-line"></span>
             </span>
           {% endfor %}
