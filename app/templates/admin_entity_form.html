@@ -187,7 +187,7 @@
       <label><span>Sort order</span><input type="number" name="sort_order" value="0"></label>
       <button class="button button-primary" type="submit">Collega media</button>
     </form>
-    {% if entity.entity_type == "person" %}
+    {% if entity.entity_type in ["person", "place"] %}
       <hr>
       <p class="eyebrow">Carica più immagini</p>
       <form method="post" action="/admin/entities/{{ entity.id }}/media/bulk-upload" class="admin-form" enctype="multipart/form-data">
