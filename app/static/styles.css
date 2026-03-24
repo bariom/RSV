@@ -298,9 +298,31 @@ h3 { font-size: 1.8rem; }
 
 .graphic-detail-card {
   margin-bottom: 0.5rem;
-  min-height: 6.5rem;
+  height: 13.2rem;
   max-width: 24rem;
   padding: 0.9rem 1rem;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  align-content: start;
+  overflow: hidden;
+}
+
+#graphicDetailTitle {
+  margin-bottom: 0.55rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+#graphicDetailSummary {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .graphic-timeline-scroll {
